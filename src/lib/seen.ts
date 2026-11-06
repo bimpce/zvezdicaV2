@@ -1,26 +1,34 @@
-/** Device-local "seen" markers for reminders (no auth identity for children). */
-const CHILD_KEY = (id: string) => `zv-seen-chores-${id}`;
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+
+/** Which chores a child has already seen — stored in the family account so it syncs across devices. */
+export function useSeenChores(childId: string) {
+  return useQuery({
+    queryKey: ["seen-chores", childId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("child_seen_chores").select("chore_id").eq("child_id", childId);
+      if (error) throw error;
+      return new Set(data.map((r) => r.chore_id));
+    },
+  });
+}
+
+export function useMarkChoresSeen(childId: string) {
+  const qc = useQueryClient();
+  return async (ids: string[]) => {
+    if (!ids.length) return;
+    await supabase
+      .from("child_seen_chores")
+      .upsert(ids.map((chore_id) => ({ child_id: childId, chore_id })), { ignoreDuplicates: true });
+    qc.invalidateQueries({ queryKey: ["seen-chores", childId] });
+  };
+}
+
+/** Parent bell "last opened" marker stays device-local. */
 const PARENT_KEY = "zv-parent-notif-seen-at";
-
-export function getSeenChores(childId: string): Set<string> | null {
-  try {
-    const raw = localStorage.getItem(CHILD_KEY(childId));
-    return raw ? new Set(JSON.parse(raw) as string[]) : null;
-  } catch {
-    return null;
-  }
-}
-
-export function markChoresSeen(childId: string, ids: string[]) {
-  const s = getSeenChores(childId) ?? new Set<string>();
-  ids.forEach((i) => s.add(i));
-  localStorage.setItem(CHILD_KEY(childId), JSON.stringify([...s]));
-}
-
 export function getParentSeenAt(): string | null {
   return localStorage.getItem(PARENT_KEY);
 }
-
 export function setParentSeenAt(iso: string) {
   localStorage.setItem(PARENT_KEY, iso);
 }
