@@ -23,12 +23,3 @@ export function useMarkChoresSeen(childId: string) {
     qc.invalidateQueries({ queryKey: ["seen-chores", childId] });
   };
 }
-
-/** Parent bell "last opened" marker stays device-local. */
-const PARENT_KEY = "zv-parent-notif-seen-at";
-export function getParentSeenAt(): string | null {
-  return localStorage.getItem(PARENT_KEY);
-}
-export function setParentSeenAt(iso: string) {
-  localStorage.setItem(PARENT_KEY, iso);
-}
