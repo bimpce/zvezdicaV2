@@ -10,33 +10,158 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedParentRouteImport } from './routes/_authenticated/parent'
+import { Route as AuthenticatedProfilesRouteImport } from './routes/_authenticated/profiles'
+import { Route as AuthenticatedChildChildIdRouteImport } from './routes/_authenticated/child.$childId'
+import { Route as AuthenticatedParentIndexRouteImport } from './routes/_authenticated/parent.index'
+import { Route as AuthenticatedParentApprovalsRouteImport } from './routes/_authenticated/parent.approvals'
+import { Route as AuthenticatedParentChildrenRouteImport } from './routes/_authenticated/parent.children'
+import { Route as AuthenticatedParentChoresRouteImport } from './routes/_authenticated/parent.chores'
+import { Route as AuthenticatedParentSettingsRouteImport } from './routes/_authenticated/parent.settings'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedParentRoute = AuthenticatedParentRouteImport.update({
+  id: '/parent',
+  path: '/parent',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfilesRoute = AuthenticatedProfilesRouteImport.update({
+  id: '/profiles',
+  path: '/profiles',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedChildChildIdRoute =
+  AuthenticatedChildChildIdRouteImport.update({
+    id: '/child/$childId',
+    path: '/child/$childId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedParentIndexRoute =
+  AuthenticatedParentIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedParentRoute,
+  } as any)
+const AuthenticatedParentApprovalsRoute =
+  AuthenticatedParentApprovalsRouteImport.update({
+    id: '/approvals',
+    path: '/approvals',
+    getParentRoute: () => AuthenticatedParentRoute,
+  } as any)
+const AuthenticatedParentChildrenRoute =
+  AuthenticatedParentChildrenRouteImport.update({
+    id: '/children',
+    path: '/children',
+    getParentRoute: () => AuthenticatedParentRoute,
+  } as any)
+const AuthenticatedParentChoresRoute =
+  AuthenticatedParentChoresRouteImport.update({
+    id: '/chores',
+    path: '/chores',
+    getParentRoute: () => AuthenticatedParentRoute,
+  } as any)
+const AuthenticatedParentSettingsRoute =
+  AuthenticatedParentSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedParentRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/parent': typeof AuthenticatedParentRouteWithChildren
+  '/profiles': typeof AuthenticatedProfilesRoute
+  '/child/$childId': typeof AuthenticatedChildChildIdRoute
+  '/parent/approvals': typeof AuthenticatedParentApprovalsRoute
+  '/parent/children': typeof AuthenticatedParentChildrenRoute
+  '/parent/chores': typeof AuthenticatedParentChoresRoute
+  '/parent/settings': typeof AuthenticatedParentSettingsRoute
+  '/parent/': typeof AuthenticatedParentIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/profiles': typeof AuthenticatedProfilesRoute
+  '/child/$childId': typeof AuthenticatedChildChildIdRoute
+  '/parent/approvals': typeof AuthenticatedParentApprovalsRoute
+  '/parent/children': typeof AuthenticatedParentChildrenRoute
+  '/parent/chores': typeof AuthenticatedParentChoresRoute
+  '/parent/settings': typeof AuthenticatedParentSettingsRoute
+  '/parent': typeof AuthenticatedParentIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/parent': typeof AuthenticatedParentRouteWithChildren
+  '/_authenticated/profiles': typeof AuthenticatedProfilesRoute
+  '/_authenticated/child/$childId': typeof AuthenticatedChildChildIdRoute
+  '/_authenticated/parent/approvals': typeof AuthenticatedParentApprovalsRoute
+  '/_authenticated/parent/children': typeof AuthenticatedParentChildrenRoute
+  '/_authenticated/parent/chores': typeof AuthenticatedParentChoresRoute
+  '/_authenticated/parent/settings': typeof AuthenticatedParentSettingsRoute
+  '/_authenticated/parent/': typeof AuthenticatedParentIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/parent'
+    | '/profiles'
+    | '/child/$childId'
+    | '/parent/approvals'
+    | '/parent/children'
+    | '/parent/chores'
+    | '/parent/settings'
+    | '/parent/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/profiles'
+    | '/child/$childId'
+    | '/parent/approvals'
+    | '/parent/children'
+    | '/parent/chores'
+    | '/parent/settings'
+    | '/parent'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/parent'
+    | '/_authenticated/profiles'
+    | '/_authenticated/child/$childId'
+    | '/_authenticated/parent/approvals'
+    | '/_authenticated/parent/children'
+    | '/_authenticated/parent/chores'
+    | '/_authenticated/parent/settings'
+    | '/_authenticated/parent/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +173,117 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/parent': {
+      id: '/_authenticated/parent'
+      path: '/parent'
+      fullPath: '/parent'
+      preLoaderRoute: typeof AuthenticatedParentRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profiles': {
+      id: '/_authenticated/profiles'
+      path: '/profiles'
+      fullPath: '/profiles'
+      preLoaderRoute: typeof AuthenticatedProfilesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/child/$childId': {
+      id: '/_authenticated/child/$childId'
+      path: '/child/$childId'
+      fullPath: '/child/$childId'
+      preLoaderRoute: typeof AuthenticatedChildChildIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/parent/': {
+      id: '/_authenticated/parent/'
+      path: '/'
+      fullPath: '/parent/'
+      preLoaderRoute: typeof AuthenticatedParentIndexRouteImport
+      parentRoute: typeof AuthenticatedParentRoute
+    }
+    '/_authenticated/parent/approvals': {
+      id: '/_authenticated/parent/approvals'
+      path: '/approvals'
+      fullPath: '/parent/approvals'
+      preLoaderRoute: typeof AuthenticatedParentApprovalsRouteImport
+      parentRoute: typeof AuthenticatedParentRoute
+    }
+    '/_authenticated/parent/children': {
+      id: '/_authenticated/parent/children'
+      path: '/children'
+      fullPath: '/parent/children'
+      preLoaderRoute: typeof AuthenticatedParentChildrenRouteImport
+      parentRoute: typeof AuthenticatedParentRoute
+    }
+    '/_authenticated/parent/chores': {
+      id: '/_authenticated/parent/chores'
+      path: '/chores'
+      fullPath: '/parent/chores'
+      preLoaderRoute: typeof AuthenticatedParentChoresRouteImport
+      parentRoute: typeof AuthenticatedParentRoute
+    }
+    '/_authenticated/parent/settings': {
+      id: '/_authenticated/parent/settings'
+      path: '/settings'
+      fullPath: '/parent/settings'
+      preLoaderRoute: typeof AuthenticatedParentSettingsRouteImport
+      parentRoute: typeof AuthenticatedParentRoute
+    }
   }
 }
 
+interface AuthenticatedParentRouteChildren {
+  AuthenticatedParentApprovalsRoute: typeof AuthenticatedParentApprovalsRoute
+  AuthenticatedParentChildrenRoute: typeof AuthenticatedParentChildrenRoute
+  AuthenticatedParentChoresRoute: typeof AuthenticatedParentChoresRoute
+  AuthenticatedParentSettingsRoute: typeof AuthenticatedParentSettingsRoute
+  AuthenticatedParentIndexRoute: typeof AuthenticatedParentIndexRoute
+}
+
+const AuthenticatedParentRouteChildren: AuthenticatedParentRouteChildren = {
+  AuthenticatedParentApprovalsRoute: AuthenticatedParentApprovalsRoute,
+  AuthenticatedParentChildrenRoute: AuthenticatedParentChildrenRoute,
+  AuthenticatedParentChoresRoute: AuthenticatedParentChoresRoute,
+  AuthenticatedParentSettingsRoute: AuthenticatedParentSettingsRoute,
+  AuthenticatedParentIndexRoute: AuthenticatedParentIndexRoute,
+}
+
+const AuthenticatedParentRouteWithChildren =
+  AuthenticatedParentRoute._addFileChildren(AuthenticatedParentRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedParentRoute: typeof AuthenticatedParentRouteWithChildren
+  AuthenticatedProfilesRoute: typeof AuthenticatedProfilesRoute
+  AuthenticatedChildChildIdRoute: typeof AuthenticatedChildChildIdRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedParentRoute: AuthenticatedParentRouteWithChildren,
+  AuthenticatedProfilesRoute: AuthenticatedProfilesRoute,
+  AuthenticatedChildChildIdRoute: AuthenticatedChildChildIdRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
