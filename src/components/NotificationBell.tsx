@@ -1,29 +1,35 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useChildren, useChores, useCompletions } from "@/lib/data";
-import { getParentSeenAt, setParentSeenAt } from "@/lib/seen";
+import { useChildren, useChores, useCompletions, useFamily } from "@/lib/data";
 
 export function NotificationBell() {
   const { data: comps = [] } = useCompletions();
   const { data: chores = [] } = useChores();
   const { data: kids = [] } = useChildren();
-  const [seenAt, setSeenAt] = useState<string | null>(null);
+  const { data: family } = useFamily();
+  const qc = useQueryClient();
+  const [localSeen, setLocalSeen] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => setSeenAt(getParentSeenAt()), []);
+  const seenAt = [localSeen, family?.notifications_seen_at ?? null]
+    .filter(Boolean)
+    .map((s) => new Date(s!).getTime())
+    .reduce((a, b) => Math.max(a, b), 0);
 
   const pending = comps.filter((c) => c.status === "pending");
-  const unread = pending.filter((c) => !seenAt || c.submitted_at > seenAt).length;
+  const unread = pending.filter((c) => new Date(c.submitted_at).getTime() > seenAt).length;
 
-  function onOpenChange(o: boolean) {
+  async function onOpenChange(o: boolean) {
     setOpen(o);
-    if (o) {
+    if (o && family) {
       const now = new Date().toISOString();
-      setParentSeenAt(now);
-      setSeenAt(now);
+      setLocalSeen(now);
+      await supabase.from("families").update({ notifications_seen_at: now }).eq("id", family.id);
+      qc.invalidateQueries({ queryKey: ["family"] });
     }
   }
 

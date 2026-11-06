@@ -39,6 +39,7 @@ export function useFamily() {
       if (error) throw error;
       return data;
     },
+    refetchInterval: 30000,
   });
 }
 
