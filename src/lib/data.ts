@@ -13,6 +13,7 @@ export type Chore = {
   frequency: Frequency;
   start_date: string;
   end_date: string | null;
+  created_at: string;
   chore_assignments: { child_id: string }[];
 };
 export type Completion = {
@@ -66,6 +67,7 @@ export function useChores() {
       if (error) throw error;
       return data as unknown as Chore[];
     },
+    refetchInterval: 30000,
   });
 }
 
@@ -80,6 +82,7 @@ export function useCompletions() {
       if (error) throw error;
       return data as Completion[];
     },
+    refetchInterval: 20000,
   });
 }
 
