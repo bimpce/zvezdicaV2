@@ -222,6 +222,7 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          notifications_seen_at: string | null
           owner_id: string
           parent_name: string
         }
@@ -229,6 +230,7 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
+          notifications_seen_at?: string | null
           owner_id: string
           parent_name?: string
         }
@@ -236,6 +238,7 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
+          notifications_seen_at?: string | null
           owner_id?: string
           parent_name?: string
         }

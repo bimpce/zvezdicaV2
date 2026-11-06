@@ -1,0 +1,1 @@
+ALTER TABLE public.families ADD COLUMN notifications_seen_at timestamptz;
