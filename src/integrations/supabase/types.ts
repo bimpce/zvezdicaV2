@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      child_seen_chores: {
+        Row: {
+          child_id: string
+          chore_id: string
+          seen_at: string
+        }
+        Insert: {
+          child_id: string
+          chore_id: string
+          seen_at?: string
+        }
+        Update: {
+          child_id?: string
+          chore_id?: string
+          seen_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_seen_chores_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_seen_chores_chore_id_fkey"
+            columns: ["chore_id"]
+            isOneToOne: false
+            referencedRelation: "chores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       children: {
         Row: {
           avatar: string
