@@ -66,6 +66,7 @@ export function useChores() {
       if (error) throw error;
       return data as unknown as Chore[];
     },
+    refetchInterval: 30000,
   });
 }
 
@@ -80,6 +81,7 @@ export function useCompletions() {
       if (error) throw error;
       return data as Completion[];
     },
+    refetchInterval: 20000,
   });
 }
 
