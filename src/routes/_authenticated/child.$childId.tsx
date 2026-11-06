@@ -6,7 +6,7 @@ import { AppShell } from "@/components/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { getSeenChores, markChoresSeen } from "@/lib/seen";
+import { useMarkChoresSeen, useSeenChores } from "@/lib/seen";
 import { supabase } from "@/integrations/supabase/client";
 import { childChoreList, errMsg, pointsFor, useChildren, useChores, useCompletions, useInvalidateAll } from "@/lib/data";
 import { getMode, setMode } from "@/lib/mode";
@@ -41,21 +41,22 @@ function ChildView() {
   const points = pointsFor(childId, comps);
   const mine = comps.filter((c) => c.child_id === childId);
   const approved = mine.filter((c) => c.status === "approved");
-  const [seen, setSeen] = useState<Set<string> | null | undefined>(undefined);
+  const { data: seenData, isSuccess: seenLoaded } = useSeenChores(childId);
+  const markSeen = useMarkChoresSeen(childId);
   const [dismissed, setDismissed] = useState(false);
-  useEffect(() => setSeen(getSeenChores(childId)), [childId]);
   const recent = Date.now() - 2 * 86400000;
-  const newOnes = seen === undefined ? [] : list.filter(({ chore, status }) =>
+  // no rows yet = first use: only chores from the last 2 days count as new
+  const seen = seenLoaded && seenData.size > 0 ? seenData : null;
+  const newOnes = !seenLoaded ? [] : list.filter(({ chore, status }) =>
     status === "todo" && (seen ? !seen.has(chore.id) : new Date(chore.created_at).getTime() > recent));
   const newIds = new Set(newOnes.map((n) => n.chore.id));
   useEffect(() => {
-    // first visit on this device: everything older is treated as already known
-    if (seen === null && chores.length) {
-      const old = chores.filter((c) => new Date(c.created_at).getTime() <= recent).map((c) => c.id);
-      markChoresSeen(childId, old);
+    if (seenLoaded && seenData.size === 0 && chores.length) {
+      const old = list.filter(({ chore }) => new Date(chore.created_at).getTime() <= recent).map(({ chore }) => chore.id);
+      void markSeen(old);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seen, chores.length]);
+  }, [seenLoaded, chores.length]);
 
   async function done(choreId: string, key: string) {
     const m = getMode();
@@ -64,8 +65,7 @@ function ChildView() {
     const { error } = await supabase.rpc("child_submit", { _child_id: childId, _pin: m.pin, _chore_id: choreId, _period_key: key });
     setBusy(null);
     if (error) { toast.error(errMsg(error)); return; }
-    markChoresSeen(childId, [choreId]);
-    setSeen(getSeenChores(childId));
+    void markSeen([choreId]);
     toast.success("Poslano staršem v pregled! 🚀");
     refresh();
   }
