@@ -13,7 +13,7 @@ import { isValidPin } from "@/lib/periods";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/parent/children")({
-  validateSearch: (s: Record<string, unknown>): { welcome?: boolean } => (s.welcome === true || s.welcome === "true" ? { welcome: true } : {}),
+  validateSearch: (s: Record<string, unknown>): { welcome?: boolean } => (s["welcome"] === true || s["welcome"] === "true" ? { welcome: true } : {}),
   head: () => ({ meta: [{ title: "Otroci | Zvezdica" }, { name: "description", content: "Dodaj in uredi profile otrok." }, { property: "og:title", content: "Otroci | Zvezdica" }, { property: "og:description", content: "Dodaj in uredi profile otrok." }] }),
   component: Children,
 });
@@ -27,7 +27,7 @@ function Children() {
   const refresh = useInvalidateAll();
   const [dlg, setDlg] = useState<DialogState>(welcome ? { kind: "add" } : null);
   const [name, setName] = useState("");
-  const [avatar, setAvatar] = useState(AVATARS[0]);
+  const [avatar, setAvatar] = useState<string>(AVATARS[0]!);
   const [pin, setPin] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -35,14 +35,14 @@ function Children() {
     setDlg(d);
     setPin("");
     if (d?.kind === "edit") { setName(d.child.name); setAvatar(d.child.avatar); }
-    else { setName(""); setAvatar(AVATARS[kids.length % AVATARS.length]); }
+    else { setName(""); setAvatar(AVATARS[kids.length % AVATARS.length]!); }
   }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!dlg) return;
-    if (dlg.kind !== "pin" && !name.trim()) return toast.error("Vnesi ime otroka.");
-    if (dlg.kind !== "edit" && !isValidPin(pin)) return toast.error("PIN mora imeti točno 6 številk.");
+    if (dlg.kind !== "pin" && !name.trim()) { toast.error("Vnesi ime otroka."); return; }
+    if (dlg.kind !== "edit" && !isValidPin(pin)) { toast.error("PIN mora imeti točno 6 številk."); return; }
     setBusy(true);
     try {
       if (dlg.kind === "add") {
@@ -70,7 +70,7 @@ function Children() {
   async function remove(c: Child) {
     if (!confirm(`Izbrišem profil ${c.name}? Izgubljene bodo vse točke.`)) return;
     const { error } = await supabase.from("children").delete().eq("id", c.id);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("Profil izbrisan");
     refresh();
   }

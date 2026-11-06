@@ -16,10 +16,10 @@ export function PinInput({
       maxLength={6}
       value={value}
       onChange={(v) => onChange(v.replace(/\D/g, ""))}
-      onComplete={onComplete}
+      {...(onComplete ? { onComplete } : {})}
       inputMode="numeric"
       pattern="^[0-9]*$"
-      autoFocus={autoFocus}
+      autoFocus={!!autoFocus}
       containerClassName="w-full justify-center"
     >
       <InputOTPGroup className="flex w-full max-w-sm gap-1.5 xs:gap-2">

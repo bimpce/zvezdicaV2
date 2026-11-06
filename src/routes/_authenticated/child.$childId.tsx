@@ -14,7 +14,7 @@ type Tab = "tasks" | "points" | "history";
 
 export const Route = createFileRoute("/_authenticated/child/$childId")({
   validateSearch: (s: Record<string, unknown>): { tab?: Tab } =>
-    s.tab === "points" || s.tab === "history" ? { tab: s.tab } : {},
+    s["tab"] === "points" || s["tab"] === "history" ? { tab: s["tab"] } : {},
   beforeLoad: ({ params }) => {
     const m = getMode();
     if (m?.kind !== "child" || m.id !== params.childId) throw redirect({ to: "/profiles" });
@@ -46,7 +46,7 @@ function ChildView() {
     setBusy(choreId);
     const { error } = await supabase.rpc("child_submit", { _child_id: childId, _pin: m.pin, _chore_id: choreId, _period_key: key });
     setBusy(null);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("Poslano staršem v pregled! 🚀");
     refresh();
   }

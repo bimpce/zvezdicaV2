@@ -21,7 +21,7 @@ export function ApprovalList({ limit }: { limit?: number }) {
       .from("completions")
       .update({ status, note: n || null, reviewed_at: new Date().toISOString() })
       .eq("id", c.id);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success(status === "approved" ? `Potrjeno! +${c.points} točk` : "Opravilo zavrnjeno");
     setRejecting(null);
     setNote("");
@@ -63,7 +63,7 @@ export function ApprovalList({ limit }: { limit?: number }) {
             variant="destructive"
             className="w-full"
             onClick={() => {
-              if (!note.trim()) return toast.error("Dodaj kratko razlago.");
+              if (!note.trim()) { toast.error("Dodaj kratko razlago."); return; }
               if (rejecting) review(rejecting, "rejected", note.trim());
             }}
           >

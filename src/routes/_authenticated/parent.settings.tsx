@@ -23,9 +23,9 @@ function Settings() {
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    if (!family || !f.name.trim()) return toast.error("Ime družine je obvezno.");
+    if (!family || !f.name.trim()) { toast.error("Ime družine je obvezno."); return; }
     const { error } = await supabase.from("families").update({ name: f.name.trim(), parent_name: f.parent.trim() }).eq("id", family.id);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("Shranjeno");
     refresh();
   }

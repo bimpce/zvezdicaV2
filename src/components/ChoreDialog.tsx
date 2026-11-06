@@ -24,7 +24,7 @@ export function ChoreDialog({ open, onOpenChange, chore }: { open: boolean; onOp
     setF(
       chore
         ? { title: chore.title, description: chore.description ?? "", points: String(chore.points), frequency: chore.frequency, start: chore.start_date, end: chore.end_date ?? "", kids: chore.chore_assignments.map((a) => a.child_id) }
-        : { ...empty, kids: kids.length === 1 ? [kids[0].id] : [] },
+        : { ...empty, kids: kids.length === 1 ? [kids[0]!.id] : [] },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, chore]);
@@ -32,10 +32,10 @@ export function ChoreDialog({ open, onOpenChange, chore }: { open: boolean; onOp
   async function save(e: React.FormEvent) {
     e.preventDefault();
     const pts = Number(f.points);
-    if (!f.title.trim()) return toast.error("Vnesi naziv opravila.");
-    if (!Number.isInteger(pts) || pts < 1) return toast.error("Točke morajo biti celo število, večje od 0.");
-    if (f.end && f.end < f.start) return toast.error("Datum zaključka ne sme biti pred začetkom.");
-    if (f.kids.length === 0) return toast.error("Izberi vsaj enega otroka.");
+    if (!f.title.trim()) { toast.error("Vnesi naziv opravila."); return; }
+    if (!Number.isInteger(pts) || pts < 1) { toast.error("Točke morajo biti celo število, večje od 0."); return; }
+    if (f.end && f.end < f.start) { toast.error("Datum zaključka ne sme biti pred začetkom."); return; }
+    if (f.kids.length === 0) { toast.error("Izberi vsaj enega otroka."); return; }
     if (!family) return;
     setBusy(true);
     try {

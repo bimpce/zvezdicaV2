@@ -23,7 +23,7 @@ function Chores() {
   async function remove(c: Chore) {
     if (!confirm(`Izbrišem opravilo »${c.title}«?`)) return;
     const { error } = await supabase.from("chores").delete().eq("id", c.id);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("Opravilo izbrisano");
     refresh();
   }

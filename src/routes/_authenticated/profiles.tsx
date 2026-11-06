@@ -35,13 +35,13 @@ function Profiles() {
 
   async function tryPin(value: string) {
     if (!child) return;
-    if (!isValidPin(value)) return toast.error("PIN mora imeti točno 6 številk.");
+    if (!isValidPin(value)) { toast.error("PIN mora imeti točno 6 številk."); return; }
     setBusy(true);
     const { data, error } = await supabase.rpc("verify_child_pin", { _child_id: child.id, _pin: value });
     setBusy(false);
     if (error || !data) {
       setPin("");
-      return toast.error("Napačen PIN. Poskusi znova.");
+      { toast.error("Napačen PIN. Poskusi znova."); return; }
     }
     setMode({ kind: "child", id: child.id, pin: value });
     navigate({ to: "/child/$childId", params: { childId: child.id } });
@@ -53,7 +53,7 @@ function Profiles() {
     const { data: u } = await supabase.auth.getUser();
     const { error } = await supabase.auth.signInWithPassword({ email: u.user?.email ?? "", password: pw });
     setBusy(false);
-    if (error) return toast.error("Napačno geslo.");
+    if (error) { toast.error("Napačno geslo."); return; }
     setMode({ kind: "parent" });
     navigate({ to: "/parent" });
   }

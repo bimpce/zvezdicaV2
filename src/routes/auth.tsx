@@ -13,7 +13,7 @@ type Mode = "signup" | "login";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>): { mode: Mode } => ({
-    mode: s.mode === "signup" ? "signup" : "login",
+    mode: s["mode"] === "signup" ? "signup" : "login",
   }),
   head: () => ({
     meta: [
@@ -38,8 +38,8 @@ function AuthPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (mode === "signup" && (!f.family.trim() || !f.name.trim()))
-      return toast.error("Vnesi ime družine in svoje ime.");
-    if (f.password.length < 6) return toast.error("Geslo mora imeti vsaj 6 znakov.");
+      { toast.error("Vnesi ime družine in svoje ime."); return; }
+    if (f.password.length < 6) { toast.error("Geslo mora imeti vsaj 6 znakov."); return; }
     setBusy(true);
     try {
       if (mode === "signup") {
