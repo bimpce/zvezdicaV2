@@ -1,10 +1,12 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { CheckCircle2, History, ListTodo, LogOut, Star, Trophy } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { getSeenChores, markChoresSeen } from "@/lib/seen";
 import { supabase } from "@/integrations/supabase/client";
 import { childChoreList, errMsg, pointsFor, useChildren, useChores, useCompletions, useInvalidateAll } from "@/lib/data";
 import { getMode, setMode } from "@/lib/mode";
@@ -39,6 +41,21 @@ function ChildView() {
   const points = pointsFor(childId, comps);
   const mine = comps.filter((c) => c.child_id === childId);
   const approved = mine.filter((c) => c.status === "approved");
+  const [seen, setSeen] = useState<Set<string> | null | undefined>(undefined);
+  const [dismissed, setDismissed] = useState(false);
+  useEffect(() => setSeen(getSeenChores(childId)), [childId]);
+  const recent = Date.now() - 2 * 86400000;
+  const newOnes = seen === undefined ? [] : list.filter(({ chore, status }) =>
+    status === "todo" && (seen ? !seen.has(chore.id) : new Date(chore.created_at).getTime() > recent));
+  const newIds = new Set(newOnes.map((n) => n.chore.id));
+  useEffect(() => {
+    // first visit on this device: everything older is treated as already known
+    if (seen === null && chores.length) {
+      const old = chores.filter((c) => new Date(c.created_at).getTime() <= recent).map((c) => c.id);
+      markChoresSeen(childId, old);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seen, chores.length]);
 
   async function done(choreId: string, key: string) {
     const m = getMode();
@@ -47,6 +64,8 @@ function ChildView() {
     const { error } = await supabase.rpc("child_submit", { _child_id: childId, _pin: m.pin, _chore_id: choreId, _period_key: key });
     setBusy(null);
     if (error) { toast.error(errMsg(error)); return; }
+    markChoresSeen(childId, [choreId]);
+    setSeen(getSeenChores(childId));
     toast.success("Poslano staršem v pregled! 🚀");
     refresh();
   }
@@ -67,6 +86,20 @@ function ChildView() {
         </Button>
       }
     >
+      <Dialog open={!dismissed && newOnes.length > 0} onOpenChange={(o) => !o && setDismissed(true)}>
+        <DialogContent className="max-w-[calc(100vw-1.5rem)] rounded-3xl text-center sm:max-w-sm">
+          <DialogHeader><DialogTitle className="text-center font-display text-2xl">Hej, imaš {newOnes.length === 1 ? "novo opravilo" : "nova opravila"}! 🌟</DialogTitle></DialogHeader>
+          <ul className="space-y-2">
+            {newOnes.map(({ chore }) => (
+              <li key={chore.id} className="flex items-center justify-between gap-2 rounded-2xl bg-muted p-3 text-left font-bold">
+                <span className="min-w-0 break-words">{chore.title}</span>
+                <span className="shrink-0 rounded-full bg-sun px-2.5 py-1 text-sun-foreground">+{chore.points}</span>
+              </li>
+            ))}
+          </ul>
+          <Button variant="hero" size="lg" className="w-full" onClick={() => setDismissed(true)}>Gremo! 💪</Button>
+        </DialogContent>
+      </Dialog>
       <div className="space-y-6">
         <div className="flex flex-col items-center gap-4 rounded-3xl bg-gradient-points p-5 text-sun-foreground xs:flex-row xs:p-6">
           <span className="avatar-lg flex shrink-0 items-center justify-center rounded-full bg-card">{me?.avatar}</span>
@@ -89,7 +122,10 @@ function ChildView() {
                 <div key={chore.id} className="rounded-2xl bg-card p-4 shadow-soft">
                   <div className="flex items-start gap-3">
                     <div className="min-w-0 flex-1">
-                      <h3 className="break-words">{chore.title}</h3>
+                      <h3 className="break-words">
+                        {chore.title}
+                        {newIds.has(chore.id) && <span className="ml-2 inline-block rounded-full bg-accent px-2 py-0.5 align-middle text-xs font-extrabold text-accent-foreground">Novo</span>}
+                      </h3>
                       {chore.description && <p className="text-sm text-muted-foreground">{chore.description}</p>}
                       <div className="mt-2 flex flex-wrap items-center gap-2">
                         <StatusBadge status={status} />
