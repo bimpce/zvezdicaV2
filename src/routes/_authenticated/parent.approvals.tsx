@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ApprovalList } from "@/components/ApprovalList";
+import { RedemptionList } from "@/components/RedemptionList";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useChildren, useChores, useCompletions } from "@/lib/data";
 
@@ -17,6 +18,10 @@ function Approvals() {
     <div className="space-y-8">
       <h1>Potrditve</h1>
       <ApprovalList />
+      <section className="space-y-3">
+        <h2>Nagrade v pregledu</h2>
+        <RedemptionList />
+      </section>
       <section className="space-y-3">
         <h2>Zgodovina aktivnosti</h2>
         {history.length === 0 && <p className="text-muted-foreground">Še ni zgodovine.</p>}

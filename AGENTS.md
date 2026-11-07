@@ -33,3 +33,4 @@ use the editor.
 - Children are not auth users: the device is signed in as the parent's account; child identity is a per-tab session (src/lib/mode.ts) verified by PIN via security-definer RPCs (`verify_child_pin`, `child_submit`). Why: kids log in with name + PIN only.
 - PIN hashes are never readable by clients (column-level grants on `children`); always select explicit child columns.
 - Recurring chores reset by period key (src/lib/periods.ts); a completion is unique per chore/child/period. Why: no cron needed.
+- Reward points: available = approved chore points minus pending+approved redemptions (src/lib/rewards.ts); children redeem only via `child_redeem` RPC (PIN + balance check). Why: pending requests reserve points so they cannot be double-spent.

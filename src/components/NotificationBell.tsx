@@ -6,12 +6,15 @@ import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useChildren, useChores, useCompletions, useFamily } from "@/lib/data";
+import { useRedemptions, useRewards } from "@/lib/rewards";
 
 export function NotificationBell() {
   const { data: comps = [] } = useCompletions();
   const { data: chores = [] } = useChores();
   const { data: kids = [] } = useChildren();
   const { data: family } = useFamily();
+  const { data: reds = [] } = useRedemptions();
+  const { data: rewards = [] } = useRewards();
   const qc = useQueryClient();
   const [localSeen, setLocalSeen] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -21,7 +24,9 @@ export function NotificationBell() {
     .reduce((a, b) => Math.max(a, b), 0);
 
   const pending = comps.filter((c) => c.status === "pending");
-  const unread = pending.filter((c) => new Date(c.submitted_at).getTime() > seenAt).length;
+  const pendingReds = reds.filter((r) => r.status === "pending");
+  const unread = pending.filter((c) => new Date(c.submitted_at).getTime() > seenAt).length
+    + pendingReds.filter((r) => new Date(r.requested_at).getTime() > seenAt).length;
 
   async function onOpenChange(o: boolean) {
     setOpen(o);
@@ -47,8 +52,23 @@ export function NotificationBell() {
       </PopoverTrigger>
       <PopoverContent align="end" className="w-[min(20rem,calc(100vw-1.5rem))] rounded-2xl p-2">
         <p className="px-2 py-1 font-display font-semibold">Obvestila</p>
-        {pending.length === 0 && <p className="px-2 py-3 text-sm text-muted-foreground">Ni novih oddanih opravil.</p>}
+        {pending.length + pendingReds.length === 0 && <p className="px-2 py-3 text-sm text-muted-foreground">Ni novih oddanih opravil.</p>}
         <ul className="max-h-80 space-y-1 overflow-y-auto">
+          {pendingReds.slice(0, 10).map((r) => {
+            const kid = kids.find((k) => k.id === r.child_id);
+            const rw = rewards.find((x) => x.id === r.reward_id);
+            return (
+              <li key={r.id}>
+                <Link to="/parent/approvals" onClick={() => setOpen(false)} className="block min-h-11 rounded-xl px-2 py-2 text-sm hover:bg-muted">
+                  <span className="font-bold">{kid?.avatar} {kid?.name}</span> želi unovčiti nagrado{" "}
+                  <span className="font-bold">{rw?.emoji} „{rw?.title}"</span> ({r.points} točk).
+                  <span className="block text-xs text-muted-foreground">
+                    {new Date(r.requested_at).toLocaleString("sl-SI", { dateStyle: "short", timeStyle: "short" })}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
           {pending.slice(0, 20).map((c) => {
             const kid = kids.find((k) => k.id === c.child_id);
             const chore = chores.find((x) => x.id === c.chore_id);

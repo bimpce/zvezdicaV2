@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      child_goals: {
+        Row: {
+          child_id: string
+          reward_id: string
+          set_at: string
+        }
+        Insert: {
+          child_id: string
+          reward_id: string
+          set_at?: string
+        }
+        Update: {
+          child_id?: string
+          reward_id?: string
+          set_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_goals_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_goals_reward_id_fkey"
+            columns: ["reward_id"]
+            isOneToOne: false
+            referencedRelation: "rewards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       child_seen_chores: {
         Row: {
           child_id: string
@@ -244,6 +277,109 @@ export type Database = {
         }
         Relationships: []
       }
+      reward_redemptions: {
+        Row: {
+          child_id: string
+          family_id: string
+          id: string
+          points: number
+          requested_at: string
+          reviewed_at: string | null
+          reward_id: string
+          status: Database["public"]["Enums"]["completion_status"]
+        }
+        Insert: {
+          child_id: string
+          family_id: string
+          id?: string
+          points: number
+          requested_at?: string
+          reviewed_at?: string | null
+          reward_id: string
+          status?: Database["public"]["Enums"]["completion_status"]
+        }
+        Update: {
+          child_id?: string
+          family_id?: string
+          id?: string
+          points?: number
+          requested_at?: string
+          reviewed_at?: string | null
+          reward_id?: string
+          status?: Database["public"]["Enums"]["completion_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reward_redemptions_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reward_redemptions_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reward_redemptions_reward_id_fkey"
+            columns: ["reward_id"]
+            isOneToOne: false
+            referencedRelation: "rewards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rewards: {
+        Row: {
+          active: boolean
+          child_id: string | null
+          created_at: string
+          emoji: string
+          family_id: string
+          id: string
+          points: number
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          child_id?: string | null
+          created_at?: string
+          emoji?: string
+          family_id: string
+          id?: string
+          points?: number
+          title: string
+        }
+        Update: {
+          active?: boolean
+          child_id?: string | null
+          created_at?: string
+          emoji?: string
+          family_id?: string
+          id?: string
+          points?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rewards_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rewards_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -252,6 +388,11 @@ export type Database = {
       add_child: {
         Args: { _avatar: string; _name: string; _pin: string }
         Returns: string
+      }
+      child_available_points: { Args: { _child_id: string }; Returns: number }
+      child_redeem: {
+        Args: { _child_id: string; _pin: string; _reward_id: string }
+        Returns: undefined
       }
       child_submit: {
         Args: {
