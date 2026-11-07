@@ -96,10 +96,10 @@ function ChildView() {
   }
 
   const nav = [
-    { to: "/child/$childId", params: { childId }, search: {}, label: "Moja opravila", icon: ListTodo, active: tab === "tasks" },
-    { to: "/child/$childId", params: { childId }, search: { tab: "points" }, label: "Moje točke", icon: Trophy, active: tab === "points" },
-    { to: "/child/$childId", params: { childId }, search: { tab: "rewards" }, label: "Nagrade", icon: Gift, active: tab === "rewards" },
-    { to: "/child/$childId", params: { childId }, search: { tab: "history" }, label: "Zgodovina", icon: History, active: tab === "history" },
+    { to: "/child/$childId", params: { childId }, search: {}, label: t("Moja opravila"), icon: ListTodo, active: tab === "tasks" },
+    { to: "/child/$childId", params: { childId }, search: { tab: "points" }, label: t("Moje točke"), icon: Trophy, active: tab === "points" },
+    { to: "/child/$childId", params: { childId }, search: { tab: "rewards" }, label: t("Nagrade"), icon: Gift, active: tab === "rewards" },
+    { to: "/child/$childId", params: { childId }, search: { tab: "history" }, label: t("Zgodovina"), icon: History, active: tab === "history" },
   ];
 
   return (

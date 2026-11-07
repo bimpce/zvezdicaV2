@@ -29,12 +29,12 @@ function ParentLayout() {
     <AppShell
       title={family?.name ?? t("Družina")}
       nav={[
-        { to: "/parent", label: "Domov", icon: Home, active: is("/parent") },
-        { to: "/parent/chores", label: "Opravila", icon: ListTodo, active: is("/parent/chores") },
-        { to: "/parent/children", label: "Otroci", icon: Users, active: is("/parent/children") },
-        { to: "/parent/rewards", label: "Nagrade", icon: Gift, active: is("/parent/rewards") },
-        { to: "/parent/approvals", label: "Potrditve", icon: CheckCheck, active: is("/parent/approvals"), badge: pending },
-        { to: "/parent/settings", label: "Nastavitve", icon: Settings, active: is("/parent/settings") },
+        { to: "/parent", label: t("Domov"), icon: Home, active: is("/parent") },
+        { to: "/parent/chores", label: t("Opravila"), icon: ListTodo, active: is("/parent/chores") },
+        { to: "/parent/children", label: t("Otroci"), icon: Users, active: is("/parent/children") },
+        { to: "/parent/rewards", label: t("Nagrade"), icon: Gift, active: is("/parent/rewards") },
+        { to: "/parent/approvals", label: t("Potrditve"), icon: CheckCheck, active: is("/parent/approvals"), badge: pending },
+        { to: "/parent/settings", label: t("Nastavitve"), icon: Settings, active: is("/parent/settings") },
       ]}
       footer={
         <div className="flex items-center gap-1">
