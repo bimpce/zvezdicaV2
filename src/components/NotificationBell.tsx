@@ -63,7 +63,7 @@ export function NotificationBell() {
               <li key={r.id}>
                 <Link to="/parent/approvals" onClick={() => setOpen(false)} className="block min-h-11 rounded-xl px-2 py-2 text-sm hover:bg-muted">
                   <span className="font-bold">{kid?.avatar} {kid?.name}</span> {t("želi unovčiti nagrado")}{" "}
-                  <span className="font-bold">{rw?.emoji} „{rw?.title}"</span> ({r.points} {t("točk")}).
+                  <span className="font-bold">{rw?.emoji} {t("„{title}“", { title: rw?.title })}</span> ({r.points} {t("točk")}).
                   <span className="block text-xs text-muted-foreground">
                     {new Date(r.requested_at).toLocaleString(t.locale, { dateStyle: "short", timeStyle: "short" })}
                   </span>
@@ -82,7 +82,7 @@ export function NotificationBell() {
                   className="block min-h-11 rounded-xl px-2 py-2 text-sm hover:bg-muted"
                 >
                   <span className="font-bold">{kid?.avatar} {kid?.name}</span> {t("je označil/a opravilo")}{" "}
-                  <span className="font-bold">„{chore?.title}"</span> {t("kot opravljeno.")}
+                  <span className="font-bold">{t("„{title}“", { title: chore?.title })}</span> {t("kot opravljeno.")}
                   <span className="block text-xs text-muted-foreground">
                     {new Date(c.submitted_at).toLocaleString(t.locale, { dateStyle: "short", timeStyle: "short" })}
                   </span>

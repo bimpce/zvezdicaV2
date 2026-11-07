@@ -167,7 +167,7 @@ const dict: D = {
   "Izbrišem opravilo »{title}«?": { en: "Delete chore “{title}”?", de: "Aufgabe „{title}“ löschen?" },
   "Opravilo izbrisano": { en: "Chore deleted", de: "Aufgabe gelöscht" },
   "Še ni opravil.": { en: "No chores yet.", de: "Noch keine Aufgaben." },
-  "{n} t": { en: "{n} pts", de: "{n} P." },
+  "{n} t": { en: "{n} pts", de: "{n} Pkt." },
   "Neaktivno": { en: "Inactive", de: "Inaktiv" },
   "Vnesi naziv opravila.": { en: "Enter the chore title.", de: "Gib den Titel der Aufgabe ein." },
   "Točke morajo biti celo število, večje od 0.": { en: "Points must be a whole number greater than 0.", de: "Punkte müssen eine ganze Zahl größer als 0 sein." },
@@ -243,5 +243,8 @@ const dict: D = {
   "Da, unovči! 🎁": { en: "Yes, redeem! 🎁", de: "Ja, einlösen! 🎁" },
   "Ne še": { en: "Not yet", de: "Noch nicht" },
   "Tu se bodo pokazale tvoje zvezdice.": { en: "Your stars will show up here.", de: "Hier erscheinen deine Sterne." },
+  "Še 1 točka!": { en: "1 more point!", de: "Noch 1 Punkt!" },
+  "Še 1 točka": { en: "1 more point", de: "Noch 1 Punkt" },
+  "„{title}“": { en: "“{title}”", de: "„{title}“" },
   "{cheer} +{n} točk": { en: "{cheer} +{n} points", de: "{cheer} +{n} Punkte" },
 };

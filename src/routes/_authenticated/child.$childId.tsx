@@ -147,7 +147,7 @@ function ChildView() {
             </div>
             <Progress value={Math.min(100, (points / goalReward.points) * 100)} className="h-4" />
             <p className="text-sm text-muted-foreground">
-              {points >= goalReward.points ? t("Imaš dovolj točk — lahko unovčiš! 🎉") : t("Še {n} točk!", { n: goalReward.points - points })}
+              {points >= goalReward.points ? t("Imaš dovolj točk — lahko unovčiš! 🎉") : (goalReward.points - points === 1 ? t("Še 1 točka!") : t("Še {n} točk!", { n: goalReward.points - points }))}
             </p>
           </div>
         )}
@@ -215,7 +215,7 @@ function ChildView() {
                     </div>
                     <div className="mt-4 flex flex-col gap-2 xs:flex-row">
                       <Button variant={can ? "hero" : "outline"} className="btn-block xs:flex-1" disabled={!can || busy === r.id} onClick={() => setRedeeming(r)}>
-                        <Gift /> {can ? t("Unovči") : t("Še {n} točk", { n: r.points - points })}
+                        <Gift /> {can ? t("Unovči") : (r.points - points === 1 ? t("Še 1 točka") : t("Še {n} točk", { n: r.points - points }))}
                       </Button>
                       <Button variant="ghost" className="btn-block xs:flex-1" onClick={() => setGoal(isGoal ? null : r.id)}>
                         <Star className={isGoal ? "fill-current" : ""} /> {isGoal ? t("Moj cilj") : t("Nastavi kot cilj")}

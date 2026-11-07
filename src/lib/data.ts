@@ -1,3 +1,4 @@
+import { getLang, translate } from "./i18n";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Frequency } from "./periods";
@@ -113,5 +114,5 @@ export function childChoreList(childId: string, chores: Chore[], completions: Co
 
 export function errMsg(e: unknown) {
   if (e && typeof e === "object" && "message" in e) return String((e as { message: string }).message);
-  return "Prišlo je do napake";
+  return translate(getLang(), "Prišlo je do napake");
 }
