@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { useT } from "@/lib/i18n";
 import { Gift, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +7,7 @@ import { errMsg, useChildren, useInvalidateAll } from "@/lib/data";
 import { useRedemptions, useRewards, type Redemption } from "@/lib/rewards";
 
 export function RedemptionList() {
+  const t = useT();
   const { data: reds = [] } = useRedemptions();
   const { data: rewards = [] } = useRewards();
   const { data: kids = [] } = useChildren();
@@ -15,12 +17,12 @@ export function RedemptionList() {
   async function review(r: Redemption, status: "approved" | "rejected") {
     const { error } = await supabase.from("reward_redemptions").update({ status, reviewed_at: new Date().toISOString() }).eq("id", r.id);
     if (error) { toast.error(errMsg(error)); return; }
-    toast.success(status === "approved" ? `Nagrada izročena! −${r.points} točk` : "Zahtevek zavrnjen, točke vrnjene");
+    toast.success(status === "approved" ? t("Nagrada izročena! −{n} točk", { n: r.points }) : t("Zahtevek zavrnjen, točke vrnjene"));
     refresh();
   }
 
   if (pending.length === 0)
-    return <p className="rounded-2xl bg-muted p-6 text-center text-muted-foreground">Ni nagrad, ki čakajo na izročitev.</p>;
+    return <p className="rounded-2xl bg-muted p-6 text-center text-muted-foreground">{t("Ni nagrad, ki čakajo na izročitev.")}</p>;
 
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -32,16 +34,16 @@ export function RedemptionList() {
             <div className="flex items-start gap-3">
               <span className="avatar-md flex shrink-0 items-center justify-center rounded-full bg-secondary">{rw?.emoji ?? "🎁"}</span>
               <div className="min-w-0 flex-1">
-                <h3 className="break-words">{rw?.title ?? "Nagrada"}</h3>
+                <h3 className="break-words">{rw?.title ?? t("Nagrada")}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {kid?.avatar} {kid?.name} · {new Date(r.requested_at).toLocaleString("sl-SI", { dateStyle: "short", timeStyle: "short" })}
+                  {kid?.avatar} {kid?.name} · {new Date(r.requested_at).toLocaleString(t.locale, { dateStyle: "short", timeStyle: "short" })}
                 </p>
               </div>
               <span className="shrink-0 rounded-full bg-sun px-2.5 py-1 text-sm font-extrabold text-sun-foreground">{r.points}</span>
             </div>
             <div className="mt-4 flex flex-col gap-2 xs:flex-row">
-              <Button variant="success" className="btn-block xs:flex-1" onClick={() => review(r, "approved")}><Gift /> Potrdi in izroči</Button>
-              <Button variant="outline" className="btn-block xs:flex-1" onClick={() => review(r, "rejected")}><X /> Zavrni</Button>
+              <Button variant="success" className="btn-block xs:flex-1" onClick={() => review(r, "approved")}><Gift /> {t("Potrdi in izroči")}</Button>
+              <Button variant="outline" className="btn-block xs:flex-1" onClick={() => review(r, "rejected")}><X /> {t("Zavrni")}</Button>
             </div>
           </div>
         );

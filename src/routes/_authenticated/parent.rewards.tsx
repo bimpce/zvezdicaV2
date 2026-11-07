@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useT } from "@/lib/i18n";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Pencil, Plus, Trash2 } from "lucide-react";
@@ -28,6 +29,7 @@ type Draft = { id?: string; title: string; emoji: string; points: number; child_
 const empty: Draft = { title: "", emoji: "🎁", points: 50, child_id: null, active: true };
 
 function Rewards() {
+  const t = useT();
   const { data: rewards = [], refetch } = useRewards();
   const { data: kids = [] } = useChildren();
   const { data: family } = useFamily();
@@ -35,16 +37,16 @@ function Rewards() {
 
   async function save(d: Draft) {
     if (!family) return;
-    if (!d.title.trim() || d.points < 1) { toast.error("Vpiši naziv in točke."); return; }
+    if (!d.title.trim() || d.points < 1) { toast.error(t("Vpiši naziv in točke.")); return; }
     const row = { title: d.title.trim(), emoji: d.emoji, points: d.points, child_id: d.child_id, active: d.active, family_id: family.id };
     const { error } = d.id ? await supabase.from("rewards").update(row).eq("id", d.id) : await supabase.from("rewards").insert(row);
     if (error) { toast.error(errMsg(error)); return; }
-    toast.success("Nagrada shranjena");
+    toast.success(t("Nagrada shranjena"));
     setDraft(null);
     void refetch();
   }
   async function remove(r: Reward) {
-    if (!confirm(`Izbrišem nagrado „${r.title}"?`)) return;
+    if (!confirm(t("Izbrišem nagrado „{title}\"?", { title: r.title }))) return;
     const { error } = await supabase.from("rewards").delete().eq("id", r.id);
     if (error) toast.error(errMsg(error)); else void refetch();
   }
@@ -52,16 +54,16 @@ function Rewards() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 xs:flex-row xs:items-center xs:justify-between">
-        <h1>Nagrade</h1>
-        <Button variant="hero" className="btn-block" onClick={() => setDraft({ ...empty })}><Plus /> Nova nagrada</Button>
+        <h1>{t("Nagrade")}</h1>
+        <Button variant="hero" className="btn-block" onClick={() => setDraft({ ...empty })}><Plus /> {t("Nova nagrada")}</Button>
       </div>
 
       {rewards.length === 0 && (
         <div className="space-y-3 rounded-2xl bg-muted p-5">
-          <p className="text-muted-foreground">Še ni nagrad. Dodaj svojo ali izberi idejo:</p>
+          <p className="text-muted-foreground">{t("Še ni nagrad. Dodaj svojo ali izberi idejo:")}</p>
           <div className="flex flex-wrap gap-2">
             {IDEAS.map((i) => (
-              <Button key={i.title} variant="outline" onClick={() => setDraft({ ...empty, ...i })}>{i.emoji} {i.title} · {i.points}</Button>
+              <Button key={i.title} variant="outline" onClick={() => setDraft({ ...empty, ...i, title: t(i.title) })}>{i.emoji} {t(i.title)} · {i.points}</Button>
             ))}
           </div>
         </div>
@@ -74,41 +76,41 @@ function Rewards() {
             <div className="min-w-0 flex-1">
               <h3 className="break-words">{r.title}</h3>
               <p className="text-sm text-muted-foreground">
-                {r.child_id ? `Samo za: ${kids.find((k) => k.id === r.child_id)?.name ?? "?"}` : "Za vse otroke"}
-                {!r.active && " · skrita"}
+                {r.child_id ? t("Samo za: {name}", { name: kids.find((k) => k.id === r.child_id)?.name ?? "?" }) : t("Za vse otroke")}
+                {!r.active && t(" · skrita")}
               </p>
             </div>
             <span className="shrink-0 rounded-full bg-sun px-2.5 py-1 text-sm font-extrabold text-sun-foreground">{r.points} ⭐</span>
-            <Button variant="ghost" size="icon" className="h-11 w-11" aria-label="Uredi" onClick={() => setDraft({ ...r })}><Pencil /></Button>
-            <Button variant="ghost" size="icon" className="h-11 w-11" aria-label="Izbriši" onClick={() => remove(r)}><Trash2 /></Button>
+            <Button variant="ghost" size="icon" className="h-11 w-11" aria-label={t("Uredi")} onClick={() => setDraft({ ...r })}><Pencil /></Button>
+            <Button variant="ghost" size="icon" className="h-11 w-11" aria-label={t("Izbriši")} onClick={() => remove(r)}><Trash2 /></Button>
           </div>
         ))}
       </div>
 
       <Dialog open={!!draft} onOpenChange={(o) => !o && setDraft(null)}>
         <DialogContent className="max-w-[calc(100vw-2rem)] rounded-3xl sm:max-w-md">
-          <DialogHeader><DialogTitle className="font-display text-xl">{draft?.id ? "Uredi nagrado" : "Nova nagrada"}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-display text-xl">{draft?.id ? t("Uredi nagrado") : t("Nova nagrada")}</DialogTitle></DialogHeader>
           {draft && (
             <div className="space-y-4">
-              <div className="space-y-1.5"><Label>Naziv</Label><Input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} placeholder="npr. Pica večer" /></div>
+              <div className="space-y-1.5"><Label>{t("Naziv")}</Label><Input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} placeholder={t("npr. Pica večer")} /></div>
               <div className="space-y-1.5">
-                <Label>Sličica</Label>
+                <Label>{t("Sličica")}</Label>
                 <div className="flex flex-wrap gap-1">
                   {EMOJIS.map((e) => (
                     <button key={e} type="button" onClick={() => setDraft({ ...draft, emoji: e })} className={`h-11 w-11 rounded-xl text-2xl ${draft.emoji === e ? "bg-primary/20 ring-2 ring-primary" : "bg-muted"}`}>{e}</button>
                   ))}
                 </div>
               </div>
-              <div className="space-y-1.5"><Label>Cena v točkah</Label><Input type="number" min={1} value={draft.points} onChange={(e) => setDraft({ ...draft, points: Number(e.target.value) })} /></div>
+              <div className="space-y-1.5"><Label>{t("Cena v točkah")}</Label><Input type="number" min={1} value={draft.points} onChange={(e) => setDraft({ ...draft, points: Number(e.target.value) })} /></div>
               <div className="space-y-1.5">
-                <Label>Za koga</Label>
+                <Label>{t("Za koga")}</Label>
                 <select className="h-11 w-full rounded-md border bg-background px-3" value={draft.child_id ?? ""} onChange={(e) => setDraft({ ...draft, child_id: e.target.value || null })}>
-                  <option value="">Vsi otroci</option>
+                  <option value="">{t("Vsi otroci")}</option>
                   {kids.map((k) => <option key={k.id} value={k.id}>{k.avatar} {k.name}</option>)}
                 </select>
               </div>
-              <label className="flex items-center justify-between gap-2"><span className="font-bold">Vidna otrokom</span><Switch checked={draft.active} onCheckedChange={(v) => setDraft({ ...draft, active: v })} /></label>
-              <Button variant="hero" className="w-full" onClick={() => save(draft)}>Shrani</Button>
+              <label className="flex items-center justify-between gap-2"><span className="font-bold">{t("Vidna otrokom")}</span><Switch checked={draft.active} onCheckedChange={(v) => setDraft({ ...draft, active: v })} /></label>
+              <Button variant="hero" className="w-full" onClick={() => save(draft)}>{t("Shrani")}</Button>
             </div>
           )}
         </DialogContent>

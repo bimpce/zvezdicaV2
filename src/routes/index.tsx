@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useT } from "@/lib/i18n";
 import { useEffect } from "react";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const t = useT();
   const navigate = useNavigate();
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -34,22 +36,22 @@ function Index() {
           </span>
           <span className="font-display text-2xl font-semibold">Zvezdica</span>
         </div>
-        <h1 className="md:text-5xl">Opravila, ki prinašajo zvezdice ⭐</h1>
+        <h1 className="md:text-5xl">{t("Opravila, ki prinašajo zvezdice ⭐")}</h1>
         <p className="text-muted-foreground md:text-lg">
-          Starši dodelijo opravila, otroci jih opravijo in zbirajo točke. Vse na enem mestu.
+          {t("Starši dodelijo opravila, otroci jih opravijo in zbirajo točke. Vse na enem mestu.")}
         </p>
         <div className="flex flex-col gap-3 xs:flex-row xs:justify-center md:justify-start">
           <Button asChild variant="hero" size="lg" className="btn-block">
-            <Link to="/auth" search={{ mode: "signup" }}>Ustvari družino</Link>
+            <Link to="/auth" search={{ mode: "signup" }}>{t("Ustvari družino")}</Link>
           </Button>
           <Button asChild variant="outline" size="lg" className="btn-block">
-            <Link to="/auth" search={{ mode: "login" }}>Prijava v družino</Link>
+            <Link to="/auth" search={{ mode: "login" }}>{t("Prijava v družino")}</Link>
           </Button>
         </div>
       </div>
       <img
         src={hero}
-        alt="Družina skupaj opravlja hišna opravila"
+        alt={t("Družina skupaj opravlja hišna opravila")}
         className="w-full max-w-md flex-1 rounded-3xl shadow-soft"
         width={1024}
         height={832}

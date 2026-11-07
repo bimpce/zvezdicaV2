@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useT } from "@/lib/i18n";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
+  const t = useT();
   const { mode } = Route.useSearch();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
@@ -38,8 +40,8 @@ function AuthPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (mode === "signup" && (!f.family.trim() || !f.name.trim()))
-      { toast.error("Vnesi ime družine in svoje ime."); return; }
-    if (f.password.length < 6) { toast.error("Geslo mora imeti vsaj 6 znakov."); return; }
+      { toast.error(t("Vnesi ime družine in svoje ime.")); return; }
+    if (f.password.length < 6) { toast.error(t("Geslo mora imeti vsaj 6 znakov.")); return; }
     setBusy(true);
     try {
       if (mode === "signup") {
@@ -57,7 +59,7 @@ function AuthPage() {
         else setSent(true);
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email: f.email, password: f.password });
-        if (error) throw new Error("Napačen e-poštni naslov ali geslo.");
+        if (error) throw new Error(t("Napačen e-poštni naslov ali geslo."));
         setMode({ kind: "parent" });
         navigate({ to: "/parent" });
       }
@@ -71,37 +73,37 @@ function AuthPage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-8">
       <Link to="/" className="mb-6 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-muted-foreground">
-        <ArrowLeft className="h-4 w-4" /> Nazaj
+        <ArrowLeft className="h-4 w-4" /> {t("Nazaj")}
       </Link>
       <div className="rounded-3xl bg-card p-5 shadow-soft xs:p-8">
         {sent ? (
           <div className="space-y-3 text-center">
-            <h1>Preveri e-pošto 📬</h1>
+            <h1>{t("Preveri e-pošto 📬")}</h1>
             <p className="text-muted-foreground">
-              Poslali smo ti povezavo za potrditev na <b>{f.email}</b>. Po potrditvi se prijavi in dodaj otroke.
+              {t("Poslali smo ti povezavo za potrditev na {email}. Po potrditvi se prijavi in dodaj otroke.", { email: f.email })}
             </p>
             <Button asChild variant="outline" className="btn-block">
-              <Link to="/auth" search={{ mode: "login" }} onClick={() => setSent(false)}>Na prijavo</Link>
+              <Link to="/auth" search={{ mode: "login" }} onClick={() => setSent(false)}>{t("Na prijavo")}</Link>
             </Button>
           </div>
         ) : (
           <form onSubmit={submit} className="space-y-4">
-            <h1>{mode === "signup" ? "Ustvari družino" : "Prijava v družino"}</h1>
+            <h1>{mode === "signup" ? t("Ustvari družino") : t("Prijava v družino")}</h1>
             {mode === "signup" && (
               <>
-                <Field label="Ime družine"><Input value={f.family} onChange={set("family")} placeholder="Novakovi" required /></Field>
-                <Field label="Tvoje ime"><Input value={f.name} onChange={set("name")} placeholder="Mojca" required /></Field>
+                <Field label={t("Ime družine")}><Input value={f.family} onChange={set("family")} placeholder="Novakovi" required /></Field>
+                <Field label={t("Tvoje ime")}><Input value={f.name} onChange={set("name")} placeholder="Mojca" required /></Field>
               </>
             )}
-            <Field label="E-poštni naslov"><Input type="email" value={f.email} onChange={set("email")} required autoComplete="email" /></Field>
-            <Field label="Geslo"><Input type="password" value={f.password} onChange={set("password")} required minLength={6} autoComplete={mode === "signup" ? "new-password" : "current-password"} /></Field>
+            <Field label={t("E-poštni naslov")}><Input type="email" value={f.email} onChange={set("email")} required autoComplete="email" /></Field>
+            <Field label={t("Geslo")}><Input type="password" value={f.password} onChange={set("password")} required minLength={6} autoComplete={mode === "signup" ? "new-password" : "current-password"} /></Field>
             <Button type="submit" variant="hero" size="lg" disabled={busy} className="w-full">
-              {busy ? "Trenutek ..." : mode === "signup" ? "Ustvari družino" : "Prijava"}
+              {busy ? t("Trenutek ...") : mode === "signup" ? t("Ustvari družino") : t("Prijava")}
             </Button>
             <p className="text-center text-sm text-muted-foreground">
-              {mode === "signup" ? "Že imaš družino? " : "Nimaš še družine? "}
+              {mode === "signup" ? t("Že imaš družino? ") : t("Nimaš še družine? ")}
               <Link to="/auth" search={{ mode: mode === "signup" ? "login" : "signup" }} className="font-bold text-primary">
-                {mode === "signup" ? "Prijava" : "Ustvari družino"}
+                {mode === "signup" ? t("Prijava") : t("Ustvari družino")}
               </Link>
             </p>
           </form>

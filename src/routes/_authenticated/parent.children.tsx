@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useT } from "@/lib/i18n";
 import { useState } from "react";
 import { toast } from "sonner";
 import { KeyRound, Pencil, Plus, Trash2 } from "lucide-react";
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/_authenticated/parent/children")({
 type DialogState = { kind: "add" } | { kind: "edit"; child: Child } | { kind: "pin"; child: Child } | null;
 
 function Children() {
+  const t = useT();
   const { welcome } = Route.useSearch();
   const { data: kids = [] } = useChildren();
   const { data: comps = [] } = useCompletions();
@@ -41,22 +43,22 @@ function Children() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!dlg) return;
-    if (dlg.kind !== "pin" && !name.trim()) { toast.error("Vnesi ime otroka."); return; }
-    if (dlg.kind !== "edit" && !isValidPin(pin)) { toast.error("PIN mora imeti točno 6 številk."); return; }
+    if (dlg.kind !== "pin" && !name.trim()) { toast.error(t("Vnesi ime otroka.")); return; }
+    if (dlg.kind !== "edit" && !isValidPin(pin)) { toast.error(t("PIN mora imeti točno 6 številk.")); return; }
     setBusy(true);
     try {
       if (dlg.kind === "add") {
         const { error } = await supabase.rpc("add_child", { _name: name, _pin: pin, _avatar: avatar });
         if (error) throw error;
-        toast.success(`${name} dodan/a! 🎉`);
+        toast.success(t("{name} dodan/a! 🎉", { name }));
       } else if (dlg.kind === "edit") {
         const { error } = await supabase.from("children").update({ name: name.trim(), avatar }).eq("id", dlg.child.id);
         if (error) throw error;
-        toast.success("Profil posodobljen");
+        toast.success(t("Profil posodobljen"));
       } else {
         const { error } = await supabase.rpc("reset_child_pin", { _child_id: dlg.child.id, _pin: pin });
         if (error) throw error;
-        toast.success("PIN ponastavljen");
+        toast.success(t("PIN ponastavljen"));
       }
       refresh();
       setDlg(null);
@@ -68,10 +70,10 @@ function Children() {
   }
 
   async function remove(c: Child) {
-    if (!confirm(`Izbrišem profil ${c.name}? Izgubljene bodo vse točke.`)) return;
+    if (!confirm(t("Izbrišem profil {name}? Izgubljene bodo vse točke.", { name: c.name }))) return;
     const { error } = await supabase.from("children").delete().eq("id", c.id);
     if (error) { toast.error(errMsg(error)); return; }
-    toast.success("Profil izbrisan");
+    toast.success(t("Profil izbrisan"));
     refresh();
   }
 
@@ -79,13 +81,13 @@ function Children() {
     <div className="space-y-6">
       {welcome && (
         <div className="rounded-2xl bg-secondary p-4 text-secondary-foreground">
-          <b>Dobrodošli!</b> Dodajte otroke, nato jim dodelite opravila.{" "}
-          {kids.length > 0 && <Link to="/parent/chores" className="font-bold underline">Naprej na opravila →</Link>}
+          <b>{t("Dobrodošli!")}</b> {t("Dodajte otroke, nato jim dodelite opravila.")}{" "}
+          {kids.length > 0 && <Link to="/parent/chores" className="font-bold underline">{t("Naprej na opravila →")}</Link>}
         </div>
       )}
       <div className="flex flex-col gap-3 xs:flex-row xs:items-center xs:justify-between">
-        <h1>Otroci</h1>
-        <Button variant="hero" className="btn-block" onClick={() => openDlg({ kind: "add" })}><Plus /> Dodaj otroka</Button>
+        <h1>{t("Otroci")}</h1>
+        <Button variant="hero" className="btn-block" onClick={() => openDlg({ kind: "add" })}><Plus /> {t("Dodaj otroka")}</Button>
       </div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {kids.map((k) => (
@@ -94,13 +96,13 @@ function Children() {
               <span className="avatar-md flex shrink-0 items-center justify-center rounded-full bg-secondary">{k.avatar}</span>
               <div className="min-w-0">
                 <h3 className="truncate">{k.name}</h3>
-                <p className="text-sm text-muted-foreground">{pointsFor(k.id, comps)} točk</p>
+                <p className="text-sm text-muted-foreground">{t("{n} točk", { n: pointsFor(k.id, comps) })}</p>
               </div>
             </div>
             <div className="flex gap-1">
-              <Button variant="ghost" size="icon" aria-label="Uredi" onClick={() => openDlg({ kind: "edit", child: k })}><Pencil /></Button>
-              <Button variant="ghost" size="icon" aria-label="Ponastavi PIN" onClick={() => openDlg({ kind: "pin", child: k })}><KeyRound /></Button>
-              <Button variant="ghost" size="icon" aria-label="Izbriši" onClick={() => remove(k)}><Trash2 /></Button>
+              <Button variant="ghost" size="icon" aria-label={t("Uredi")} onClick={() => openDlg({ kind: "edit", child: k })}><Pencil /></Button>
+              <Button variant="ghost" size="icon" aria-label={t("Ponastavi PIN")} onClick={() => openDlg({ kind: "pin", child: k })}><KeyRound /></Button>
+              <Button variant="ghost" size="icon" aria-label={t("Izbriši")} onClick={() => remove(k)}><Trash2 /></Button>
             </div>
           </div>
         ))}
@@ -110,13 +112,13 @@ function Children() {
         <DialogContent className="max-h-[92vh] max-w-[calc(100vw-1.5rem)] overflow-y-auto rounded-3xl sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display text-xl">
-              {dlg?.kind === "add" ? "Nov otrok" : dlg?.kind === "edit" ? "Uredi profil" : `Nov PIN za ${dlg?.kind === "pin" ? dlg.child.name : ""}`}
+              {dlg?.kind === "add" ? t("Nov otrok") : dlg?.kind === "edit" ? t("Uredi profil") : t("Nov PIN za {name}", { name: dlg?.kind === "pin" ? dlg.child.name : "" })}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={submit} className="space-y-4">
             {dlg?.kind !== "pin" && (
               <>
-                <div className="space-y-1.5"><Label>Ime</Label><Input value={name} onChange={(e) => setName(e.target.value)} autoFocus /></div>
+                <div className="space-y-1.5"><Label>{t("Ime")}</Label><Input value={name} onChange={(e) => setName(e.target.value)} autoFocus /></div>
                 <div className="space-y-1.5">
                   <Label>Avatar</Label>
                   <div className="grid grid-cols-6 gap-1.5">
@@ -132,11 +134,11 @@ function Children() {
             )}
             {dlg?.kind !== "edit" && (
               <div className="space-y-1.5">
-                <Label>6-mestni PIN</Label>
+                <Label>{t("6-mestni PIN")}</Label>
                 <PinInput value={pin} onChange={setPin} />
               </div>
             )}
-            <Button type="submit" variant="hero" size="lg" className="w-full" disabled={busy}>Shrani</Button>
+            <Button type="submit" variant="hero" size="lg" className="w-full" disabled={busy}>{t("Shrani")}</Button>
           </form>
         </DialogContent>
       </Dialog>
