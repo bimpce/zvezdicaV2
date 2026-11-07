@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { useT } from "@/lib/i18n";
+import { useT, useTitle } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { CheckCircle2, Gift, History, ListTodo, LogOut, Star, Trophy } from "lucide-react";
@@ -41,6 +41,7 @@ function ChildView() {
   const refresh = useInvalidateAll();
   const [busy, setBusy] = useState<string | null>(null);
   const me = kids.find((k) => k.id === childId);
+  useTitle("{name} | Zvezdica", { name: me?.name ?? "" });
   const list = childChoreList(childId, chores, comps);
   const totalEarned = pointsFor(childId, comps);
   const { data: reds = [] } = useRedemptions();

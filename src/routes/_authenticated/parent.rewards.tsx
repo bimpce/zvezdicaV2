@@ -30,6 +30,7 @@ const empty: Draft = { title: "", emoji: "🎁", points: 50, child_id: null, act
 
 function Rewards() {
   const t = useT();
+  useTitle("Nagrade | Zvezdica");
   const { data: rewards = [], refetch } = useRewards();
   const { data: kids = [] } = useChildren();
   const { data: family } = useFamily();

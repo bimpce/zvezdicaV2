@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useT } from "@/lib/i18n";
+import { useT, useTitle } from "@/lib/i18n";
 import { useState } from "react";
 import { toast } from "sonner";
 import { KeyRound, Pencil, Plus, Trash2 } from "lucide-react";
@@ -23,6 +23,7 @@ type DialogState = { kind: "add" } | { kind: "edit"; child: Child } | { kind: "p
 
 function Children() {
   const t = useT();
+  useTitle("Otroci | Zvezdica");
   const { welcome } = Route.useSearch();
   const { data: kids = [] } = useChildren();
   const { data: comps = [] } = useCompletions();

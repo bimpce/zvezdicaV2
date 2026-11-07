@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { errMsg, useFamily, useInvalidateAll } from "@/lib/data";
 import { setMode } from "@/lib/mode";
-import { LANGS, setLang, useT } from "@/lib/i18n";
+import { LANGS, setLang, useT, useTitle } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/parent/settings")({
@@ -20,6 +20,7 @@ function Settings() {
   const { data: family } = useFamily();
   const refresh = useInvalidateAll();
   const t = useT();
+  useTitle("Nastavitve | Zvezdica");
   const navigate = useNavigate();
   const [f, setF] = useState({ name: "", parent: "" });
   useEffect(() => { if (family) setF({ name: family.name, parent: family.parent_name }); }, [family]);
