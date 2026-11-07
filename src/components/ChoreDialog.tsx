@@ -69,7 +69,7 @@ export function ChoreDialog({ open, onOpenChange, chore }: { open: boolean; onOp
       <DialogContent className="max-h-[92vh] max-w-[calc(100vw-1.5rem)] overflow-y-auto rounded-3xl sm:max-w-lg">
         <DialogHeader><DialogTitle className="font-display text-xl">{chore ? t("Uredi opravilo") : t("Novo opravilo")}</DialogTitle></DialogHeader>
         <form onSubmit={save} className="space-y-4">
-          <div className="space-y-1.5"><Label>{t("Naziv")}</Label><Input value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} placeholder={t("Pospravi sobo")} /></div>
+          <div className="space-y-1.5"><Label>{t("Naziv")}</Label><Input value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} placeholder={t("npr. Pospravi sobo")} /></div>
           <div className="space-y-1.5"><Label>{t("Opis (neobvezno)")}</Label><Textarea value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5"><Label>{t("Točke")}</Label><Input type="number" inputMode="numeric" min={1} value={f.points} onChange={(e) => setF({ ...f, points: e.target.value })} /></div>

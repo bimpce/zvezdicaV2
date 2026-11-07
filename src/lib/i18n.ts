@@ -186,7 +186,7 @@ const dict: D = {
   "Opravilo dodano": { en: "Chore added", de: "Aufgabe hinzugefügt" },
   "Uredi opravilo": { en: "Edit chore", de: "Aufgabe bearbeiten" },
   "Novo opravilo": { en: "New chore", de: "Neue Aufgabe" },
-  "Pospravi sobo": { en: "Tidy your room", de: "Zimmer aufräumen" },
+  "npr. Pospravi sobo": { en: "e.g. Tidy your room", de: "z. B. Zimmer aufräumen" },
   "Opis (neobvezno)": { en: "Description (optional)", de: "Beschreibung (optional)" },
   "Točke": { en: "Points", de: "Punkte" },
   "Pogostost": { en: "Frequency", de: "Häufigkeit" },
