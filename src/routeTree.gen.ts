@@ -19,6 +19,7 @@ import { Route as AuthenticatedParentIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedParentApprovalsRouteImport } from './routes/_authenticated/parent.approvals'
 import { Route as AuthenticatedParentChildrenRouteImport } from './routes/_authenticated/parent.children'
 import { Route as AuthenticatedParentChoresRouteImport } from './routes/_authenticated/parent.chores'
+import { Route as AuthenticatedParentRewardsRouteImport } from './routes/_authenticated/parent.rewards'
 import { Route as AuthenticatedParentSettingsRouteImport } from './routes/_authenticated/parent.settings'
 
 const IndexRoute = IndexRouteImport.update({
@@ -75,6 +76,12 @@ const AuthenticatedParentChoresRoute =
     path: '/chores',
     getParentRoute: () => AuthenticatedParentRoute,
   } as any)
+const AuthenticatedParentRewardsRoute =
+  AuthenticatedParentRewardsRouteImport.update({
+    id: '/rewards',
+    path: '/rewards',
+    getParentRoute: () => AuthenticatedParentRoute,
+  } as any)
 const AuthenticatedParentSettingsRoute =
   AuthenticatedParentSettingsRouteImport.update({
     id: '/settings',
@@ -91,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/parent/approvals': typeof AuthenticatedParentApprovalsRoute
   '/parent/children': typeof AuthenticatedParentChildrenRoute
   '/parent/chores': typeof AuthenticatedParentChoresRoute
+  '/parent/rewards': typeof AuthenticatedParentRewardsRoute
   '/parent/settings': typeof AuthenticatedParentSettingsRoute
   '/parent/': typeof AuthenticatedParentIndexRoute
 }
@@ -102,6 +110,7 @@ export interface FileRoutesByTo {
   '/parent/approvals': typeof AuthenticatedParentApprovalsRoute
   '/parent/children': typeof AuthenticatedParentChildrenRoute
   '/parent/chores': typeof AuthenticatedParentChoresRoute
+  '/parent/rewards': typeof AuthenticatedParentRewardsRoute
   '/parent/settings': typeof AuthenticatedParentSettingsRoute
   '/parent': typeof AuthenticatedParentIndexRoute
 }
@@ -116,6 +125,7 @@ export interface FileRoutesById {
   '/_authenticated/parent/approvals': typeof AuthenticatedParentApprovalsRoute
   '/_authenticated/parent/children': typeof AuthenticatedParentChildrenRoute
   '/_authenticated/parent/chores': typeof AuthenticatedParentChoresRoute
+  '/_authenticated/parent/rewards': typeof AuthenticatedParentRewardsRoute
   '/_authenticated/parent/settings': typeof AuthenticatedParentSettingsRoute
   '/_authenticated/parent/': typeof AuthenticatedParentIndexRoute
 }
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/parent/approvals'
     | '/parent/children'
     | '/parent/chores'
+    | '/parent/rewards'
     | '/parent/settings'
     | '/parent/'
   fileRoutesByTo: FileRoutesByTo
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/parent/approvals'
     | '/parent/children'
     | '/parent/chores'
+    | '/parent/rewards'
     | '/parent/settings'
     | '/parent'
   id:
@@ -154,6 +166,7 @@ export interface FileRouteTypes {
     | '/_authenticated/parent/approvals'
     | '/_authenticated/parent/children'
     | '/_authenticated/parent/chores'
+    | '/_authenticated/parent/rewards'
     | '/_authenticated/parent/settings'
     | '/_authenticated/parent/'
   fileRoutesById: FileRoutesById
@@ -236,6 +249,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedParentChoresRouteImport
       parentRoute: typeof AuthenticatedParentRoute
     }
+    '/_authenticated/parent/rewards': {
+      id: '/_authenticated/parent/rewards'
+      path: '/rewards'
+      fullPath: '/parent/rewards'
+      preLoaderRoute: typeof AuthenticatedParentRewardsRouteImport
+      parentRoute: typeof AuthenticatedParentRoute
+    }
     '/_authenticated/parent/settings': {
       id: '/_authenticated/parent/settings'
       path: '/settings'
@@ -250,6 +270,7 @@ interface AuthenticatedParentRouteChildren {
   AuthenticatedParentApprovalsRoute: typeof AuthenticatedParentApprovalsRoute
   AuthenticatedParentChildrenRoute: typeof AuthenticatedParentChildrenRoute
   AuthenticatedParentChoresRoute: typeof AuthenticatedParentChoresRoute
+  AuthenticatedParentRewardsRoute: typeof AuthenticatedParentRewardsRoute
   AuthenticatedParentSettingsRoute: typeof AuthenticatedParentSettingsRoute
   AuthenticatedParentIndexRoute: typeof AuthenticatedParentIndexRoute
 }
@@ -258,6 +279,7 @@ const AuthenticatedParentRouteChildren: AuthenticatedParentRouteChildren = {
   AuthenticatedParentApprovalsRoute: AuthenticatedParentApprovalsRoute,
   AuthenticatedParentChildrenRoute: AuthenticatedParentChildrenRoute,
   AuthenticatedParentChoresRoute: AuthenticatedParentChoresRoute,
+  AuthenticatedParentRewardsRoute: AuthenticatedParentRewardsRoute,
   AuthenticatedParentSettingsRoute: AuthenticatedParentSettingsRoute,
   AuthenticatedParentIndexRoute: AuthenticatedParentIndexRoute,
 }
