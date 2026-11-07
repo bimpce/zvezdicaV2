@@ -72,6 +72,7 @@ const dict: D = {
   "točk": { en: "points", de: "Punkte" },
   "Prišlo je do napake": { en: "Something went wrong", de: "Etwas ist schiefgelaufen" },
   "Jezik": { en: "Language", de: "Sprache" },
+  "Zapri": { en: "Close", de: "Schließen" },
   // status / frequency
   "Čaka na izvedbo": { en: "To do", de: "Zu erledigen" },
   "V pregledu": { en: "In review", de: "In Prüfung" },
