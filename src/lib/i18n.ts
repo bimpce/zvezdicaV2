@@ -208,6 +208,8 @@ const dict: D = {
   "Za vse otroke": { en: "For all kids", de: "Für alle Kinder" },
   " · skrita": { en: " · hidden", de: " · versteckt" },
   "Uredi nagrado": { en: "Edit reward", de: "Belohnung bearbeiten" },
+  "npr. Novakovi": { en: "e.g. The Smiths", de: "z. B. Familie Müller" },
+  "npr. Mojca": { en: "e.g. Emma", de: "z. B. Anna" },
   "npr. Pica večer": { en: "e.g. Pizza night", de: "z. B. Pizzaabend" },
   "Sličica": { en: "Icon", de: "Symbol" },
   "Cena v točkah": { en: "Price in points", de: "Preis in Punkten" },

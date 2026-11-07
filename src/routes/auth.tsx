@@ -92,8 +92,8 @@ function AuthPage() {
             <h1>{mode === "signup" ? t("Ustvari družino") : t("Prijava v družino")}</h1>
             {mode === "signup" && (
               <>
-                <Field label={t("Ime družine")}><Input value={f.family} onChange={set("family")} placeholder="Novakovi" required /></Field>
-                <Field label={t("Tvoje ime")}><Input value={f.name} onChange={set("name")} placeholder="Mojca" required /></Field>
+                <Field label={t("Ime družine")}><Input value={f.family} onChange={set("family")} placeholder={t("npr. Novakovi")} required /></Field>
+                <Field label={t("Tvoje ime")}><Input value={f.name} onChange={set("name")} placeholder={t("npr. Mojca")} required /></Field>
               </>
             )}
             <Field label={t("E-poštni naslov")}><Input type="email" value={f.email} onChange={set("email")} required autoComplete="email" /></Field>
