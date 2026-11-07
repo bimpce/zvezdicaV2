@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 import type { ChoreStatus } from "@/lib/data";
 
 const map: Record<ChoreStatus, { label: string; cls: string }> = {
@@ -10,9 +11,10 @@ const map: Record<ChoreStatus, { label: string; cls: string }> = {
 
 export function StatusBadge({ status }: { status: ChoreStatus }) {
   const m = map[status];
+  const t = useT();
   return (
     <span className={cn("inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold", m.cls)}>
-      {m.label}
+      {t(m.label)}
     </span>
   );
 }

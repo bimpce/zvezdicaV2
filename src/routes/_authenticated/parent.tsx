@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet, redirect, useLocation, useNavigate } from "@tanstack/react-router";
+import { useT } from "@/lib/i18n";
 import { CheckCheck, Gift, Home, ListTodo, Settings, Users, UserRound } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/_authenticated/parent")({
 });
 
 function ParentLayout() {
+  const t = useT();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { data: family } = useFamily();
@@ -25,7 +27,7 @@ function ParentLayout() {
 
   return (
     <AppShell
-      title={family?.name ?? "Družina"}
+      title={family?.name ?? t("Družina")}
       nav={[
         { to: "/parent", label: "Domov", icon: Home, active: is("/parent") },
         { to: "/parent/chores", label: "Opravila", icon: ListTodo, active: is("/parent/chores") },
@@ -38,7 +40,7 @@ function ParentLayout() {
         <div className="flex items-center gap-1">
           <NotificationBell />
           <Button variant="ghost" size="sm" onClick={() => { setMode(null); navigate({ to: "/profiles" }); }}>
-            <UserRound /> Zamenjaj profil
+            <UserRound /> {t("Zamenjaj profil")}
           </Button>
         </div>
       }

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useT } from "@/lib/i18n";
 import { ApprovalList } from "@/components/ApprovalList";
 import { RedemptionList } from "@/components/RedemptionList";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -10,21 +11,22 @@ export const Route = createFileRoute("/_authenticated/parent/approvals")({
 });
 
 function Approvals() {
+  const t = useT();
   const { data: comps = [] } = useCompletions();
   const { data: chores = [] } = useChores();
   const { data: kids = [] } = useChildren();
   const history = comps.filter((c) => c.status !== "pending").slice(0, 30);
   return (
     <div className="space-y-8">
-      <h1>Potrditve</h1>
+      <h1>{t("Potrditve")}</h1>
       <ApprovalList />
       <section className="space-y-3">
-        <h2>Nagrade v pregledu</h2>
+        <h2>{t("Nagrade v pregledu")}</h2>
         <RedemptionList />
       </section>
       <section className="space-y-3">
-        <h2>Zgodovina aktivnosti</h2>
-        {history.length === 0 && <p className="text-muted-foreground">Še ni zgodovine.</p>}
+        <h2>{t("Zgodovina aktivnosti")}</h2>
+        {history.length === 0 && <p className="text-muted-foreground">{t("Še ni zgodovine.")}</p>}
         <ul className="divide-y rounded-2xl bg-card shadow-soft">
           {history.map((c) => {
             const kid = kids.find((k) => k.id === c.child_id);
