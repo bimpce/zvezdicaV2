@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 export type Lang = "sl" | "en" | "de";
 export const LANGS: { code: Lang; label: string }[] = [
@@ -46,6 +46,15 @@ export function useT() {
   t.lang = lang;
   t.locale = locales[lang];
   return t;
+}
+
+/** Sets the browser tab title from a Slovenian source string; re-runs on language change. */
+export function useTitle(sl: string, vars?: Record<string, string | number | undefined>) {
+  const lang = useLang();
+  useEffect(() => {
+    document.title = translate(lang, sl, vars);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang, sl, JSON.stringify(vars ?? {})]);
 }
 
 type D = Record<string, { en: string; de: string }>;
@@ -247,4 +256,15 @@ const dict: D = {
   "Še 1 točka": { en: "1 more point", de: "Noch 1 Punkt" },
   "„{title}“": { en: "“{title}”", de: "„{title}“" },
   "{cheer} +{n} točk": { en: "{cheer} +{n} points", de: "{cheer} +{n} Punkte" },
+  // browser tab titles
+  "Zvezdica — družinska opravila in točke": { en: "Zvezdica — family chores and points", de: "Zvezdica — Familienaufgaben und Punkte" },
+  "Prijava | Zvezdica": { en: "Log in | Zvezdica", de: "Anmelden | Zvezdica" },
+  "Kdo si? | Zvezdica": { en: "Who are you? | Zvezdica", de: "Wer bist du? | Zvezdica" },
+  "Domov | Zvezdica": { en: "Home | Zvezdica", de: "Start | Zvezdica" },
+  "Opravila | Zvezdica": { en: "Chores | Zvezdica", de: "Aufgaben | Zvezdica" },
+  "Otroci | Zvezdica": { en: "Kids | Zvezdica", de: "Kinder | Zvezdica" },
+  "Nagrade | Zvezdica": { en: "Rewards | Zvezdica", de: "Belohnungen | Zvezdica" },
+  "Potrditve | Zvezdica": { en: "Approvals | Zvezdica", de: "Bestätigungen | Zvezdica" },
+  "Nastavitve | Zvezdica": { en: "Settings | Zvezdica", de: "Einstellungen | Zvezdica" },
+  "{name} | Zvezdica": { en: "{name} | Zvezdica", de: "{name} | Zvezdica" },
 };
