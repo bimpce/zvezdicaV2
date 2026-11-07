@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useT } from "@/lib/i18n";
+import { useT, useTitle } from "@/lib/i18n";
 import { ApprovalList } from "@/components/ApprovalList";
 import { RedemptionList } from "@/components/RedemptionList";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -12,6 +12,7 @@ export const Route = createFileRoute("/_authenticated/parent/approvals")({
 
 function Approvals() {
   const t = useT();
+  useTitle("Potrditve | Zvezdica");
   const { data: comps = [] } = useCompletions();
   const { data: chores = [] } = useChores();
   const { data: kids = [] } = useChildren();

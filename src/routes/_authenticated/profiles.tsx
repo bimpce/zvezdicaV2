@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useT } from "@/lib/i18n";
+import { useT, useTitle } from "@/lib/i18n";
 import { useState } from "react";
 import { toast } from "sonner";
 import { LogOut, ShieldCheck } from "lucide-react";
@@ -26,6 +26,7 @@ export const Route = createFileRoute("/_authenticated/profiles")({
 
 function Profiles() {
   const t = useT();
+  useTitle("Kdo si? | Zvezdica");
   const navigate = useNavigate();
   const { data: family } = useFamily();
   const { data: children = [] } = useChildren();

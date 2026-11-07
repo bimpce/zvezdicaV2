@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useT } from "@/lib/i18n";
+import { useT, useTitle } from "@/lib/i18n";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Pencil, Plus, Trash2 } from "lucide-react";
@@ -30,6 +30,7 @@ const empty: Draft = { title: "", emoji: "🎁", points: 50, child_id: null, act
 
 function Rewards() {
   const t = useT();
+  useTitle("Nagrade | Zvezdica");
   const { data: rewards = [], refetch } = useRewards();
   const { data: kids = [] } = useChildren();
   const { data: family } = useFamily();
