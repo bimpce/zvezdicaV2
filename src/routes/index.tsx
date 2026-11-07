@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useT, useTitle } from "@/lib/i18n";
+import { useT, useTitle, useLang, setLang, LANGS } from "@/lib/i18n";
 import { useEffect } from "react";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const t = useT();
+  const lang = useLang();
   useTitle("Zvezdica — družinska opravila in točke");
   const navigate = useNavigate();
   useEffect(() => {
@@ -31,6 +32,20 @@ function Index() {
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col items-center gap-8 px-4 py-8 md:flex-row md:gap-12 md:px-8">
       <div className="flex flex-1 flex-col gap-5 text-center md:text-left">
+        <div className="flex justify-center gap-1 md:justify-start" role="group" aria-label="Jezik / Language">
+          {LANGS.map((l) => (
+            <Button
+              key={l.code}
+              size="sm"
+              variant={lang === l.code ? "default" : "ghost"}
+              className="min-h-11"
+              onClick={() => setLang(l.code)}
+              aria-pressed={lang === l.code}
+            >
+              {l.label}
+            </Button>
+          ))}
+        </div>
         <div className="flex items-center justify-center gap-2 md:justify-start">
           <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sun text-sun-foreground">
             <Star className="h-6 w-6 fill-current" />
