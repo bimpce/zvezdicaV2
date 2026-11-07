@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useT } from "@/lib/i18n";
+import { useT, useTitle } from "@/lib/i18n";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
@@ -29,6 +29,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const t = useT();
+  useTitle("Prijava | Zvezdica");
   const { mode } = Route.useSearch();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useT } from "@/lib/i18n";
+import { useT, useTitle } from "@/lib/i18n";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ export const Route = createFileRoute("/_authenticated/parent/")({
 
 function ParentHome() {
   const t = useT();
+  useTitle("Domov | Zvezdica");
   const { data: family } = useFamily();
   const { data: kids = [] } = useChildren();
   const { data: chores = [] } = useChores();

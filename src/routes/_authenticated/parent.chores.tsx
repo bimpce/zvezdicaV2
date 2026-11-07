@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useT } from "@/lib/i18n";
+import { useT, useTitle } from "@/lib/i18n";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Pencil, Plus, Trash2 } from "lucide-react";
@@ -16,6 +16,7 @@ export const Route = createFileRoute("/_authenticated/parent/chores")({
 
 function Chores() {
   const t = useT();
+  useTitle("Opravila | Zvezdica");
   const { data: chores = [] } = useChores();
   const { data: kids = [] } = useChildren();
   const refresh = useInvalidateAll();
