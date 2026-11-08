@@ -19,8 +19,14 @@ export const Route = createFileRoute("/_authenticated/parent/rewards")({
 
 const EMOJIS = ["🎁", "🎮", "📺", "🍕", "🍦", "🎬", "🧸", "📚", "🌙", "🚲", "🏞️", "💶"];
 const IDEAS = [
+  { title: "Sladoled", emoji: "🍦", points: 15 },
   { title: "30 min videoiger", emoji: "🎮", points: 20 },
+  { title: "Film po izbiri", emoji: "📺", points: 25 },
+  { title: "Poznejša ura spanja", emoji: "🌙", points: 30 },
   { title: "Pica večer", emoji: "🍕", points: 40 },
+  { title: "Izlet s kolesom", emoji: "🚲", points: 50 },
+  { title: "Nova knjiga", emoji: "📚", points: 60 },
+  { title: "Majhna igrača", emoji: "🧸", points: 80 },
   { title: "Obisk kina", emoji: "🎬", points: 100 },
   { title: "Izlet po izbiri", emoji: "🏞️", points: 150 },
 ];
