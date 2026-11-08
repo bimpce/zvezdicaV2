@@ -138,6 +138,7 @@ const dict: D = {
   "Potrjeno! +{n} točk": { en: "Approved! +{n} points", de: "Bestätigt! +{n} Punkte" },
   "Opravilo zavrnjeno": { en: "Chore rejected", de: "Aufgabe abgelehnt" },
   "Opravilo": { en: "Chore", de: "Aufgabe" },
+  "Koliko je opravljeno?": { en: "How much was done?", de: "Wie viel wurde erledigt?" },
   "Potrdi": { en: "Approve", de: "Bestätigen" },
   "Zavrni": { en: "Reject", de: "Ablehnen" },
   "Zavrni opravilo": { en: "Reject chore", de: "Aufgabe ablehnen" },

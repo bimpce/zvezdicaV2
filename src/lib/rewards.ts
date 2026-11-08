@@ -77,3 +77,11 @@ export function availablePoints(childId: string, completions: Pick<Completion, "
 export function rewardsFor(childId: string, rewards: Reward[]) {
   return rewards.filter((r) => r.active && (!r.child_id || r.child_id === childId));
 }
+
+/** Partial approval shares a parent can choose. */
+export const APPROVAL_SHARES = [30, 60, 100] as const;
+/** Points awarded for a partial approval; partial work always earns at least 1 point. */
+export function partialPoints(points: number, percent: number) {
+  if (percent >= 100) return points;
+  return Math.max(1, Math.round((points * percent) / 100));
+}

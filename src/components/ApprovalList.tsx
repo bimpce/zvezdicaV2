@@ -5,6 +5,7 @@ import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { APPROVAL_SHARES, partialPoints } from "@/lib/rewards";
 import { supabase } from "@/integrations/supabase/client";
 import { errMsg, useChildren, useChores, useCompletions, useInvalidateAll, type Completion } from "@/lib/data";
 
@@ -18,13 +19,14 @@ export function ApprovalList({ limit }: { limit?: number }) {
   const [note, setNote] = useState("");
   const pending = comps.filter((c) => c.status === "pending").slice(0, limit);
 
-  async function review(c: Completion, status: "approved" | "rejected", n?: string) {
+  async function review(c: Completion, status: "approved" | "rejected", n?: string, percent = 100) {
+    const pts = status === "approved" ? partialPoints(c.points, percent) : c.points;
     const { error } = await supabase
       .from("completions")
-      .update({ status, note: n || null, reviewed_at: new Date().toISOString() })
+      .update({ status, points: pts, note: n || null, reviewed_at: new Date().toISOString() })
       .eq("id", c.id);
     if (error) { toast.error(errMsg(error)); return; }
-    toast.success(status === "approved" ? t("Potrjeno! +{n} točk", { n: c.points }) : t("Opravilo zavrnjeno"));
+    toast.success(status === "approved" ? t("Potrjeno! +{n} točk", { n: pts }) : t("Opravilo zavrnjeno"));
     setRejecting(null);
     setNote("");
     refresh();
@@ -50,10 +52,16 @@ export function ApprovalList({ limit }: { limit?: number }) {
               </div>
               <span className="shrink-0 rounded-full bg-sun px-2.5 py-1 text-sm font-extrabold text-sun-foreground">+{c.points}</span>
             </div>
-            <div className="mt-4 flex flex-col gap-2 xs:flex-row">
-              <Button variant="success" className="btn-block xs:flex-1" onClick={() => review(c, "approved")}><Check /> {t("Potrdi")}</Button>
-              <Button variant="outline" className="btn-block xs:flex-1" onClick={() => setRejecting(c)}><X /> {t("Zavrni")}</Button>
+            <p className="mt-4 text-sm font-bold text-muted-foreground">{t("Koliko je opravljeno?")}</p>
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              {APPROVAL_SHARES.map((p) => (
+                <Button key={p} variant={p === 100 ? "success" : "secondary"} className="h-auto min-h-11 flex-col gap-0 py-1.5" onClick={() => review(c, "approved", undefined, p)}>
+                  <span className="flex items-center gap-1">{p === 100 && <Check />}{p} %</span>
+                  <span className="text-xs font-semibold opacity-80">+{partialPoints(c.points, p)}</span>
+                </Button>
+              ))}
             </div>
+            <Button variant="outline" className="mt-2 w-full" onClick={() => setRejecting(c)}><X /> {t("Zavrni")}</Button>
           </div>
         );
       })}
