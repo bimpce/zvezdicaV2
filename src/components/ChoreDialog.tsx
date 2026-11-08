@@ -92,7 +92,7 @@ export function ChoreDialog({ open, onOpenChange, chore }: { open: boolean; onOp
               {kids.map((k) => {
                 const on = f.kids.includes(k.id);
                 return (
-                  <button type="button" key={k.id} onClick={() => setF({ ...f, kids: on ? f.kids.filter((x) => x !== k.id) : [...f.kids, k.id] })}
+                  <button type="button" key={k.id} aria-pressed={on} onClick={() => setF({ ...f, kids: on ? f.kids.filter((x) => x !== k.id) : [...f.kids, k.id] })}
                     className={cn("flex min-h-11 items-center gap-2 rounded-full border-2 px-4 font-bold transition", on ? "border-primary bg-secondary text-secondary-foreground" : "bg-card")}>
                     {k.avatar} {k.name}
                   </button>
