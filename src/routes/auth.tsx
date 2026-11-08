@@ -116,9 +116,9 @@ function AuthPage() {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-1.5">
-      <Label className="font-bold">{label}</Label>
+    <label className="block space-y-1.5">
+      <span className="text-sm font-bold leading-none">{label}</span>
       {children}
-    </div>
+    </label>
   );
 }
