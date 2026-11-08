@@ -197,7 +197,13 @@ const dict: D = {
   "Dodeli otrokom": { en: "Assign to kids", de: "Kindern zuweisen" },
   "Najprej dodaj otroka.": { en: "Add a child first.", de: "Füge zuerst ein Kind hinzu." },
   // rewards (parent)
+  "Sladoled": { en: "Ice cream", de: "Eis" },
   "30 min videoiger": { en: "30 min of video games", de: "30 Min. Videospiele" },
+  "Film po izbiri": { en: "Movie of your choice", de: "Film nach Wahl" },
+  "Poznejša ura spanja": { en: "Later bedtime", de: "Später ins Bett" },
+  "Izlet s kolesom": { en: "Bike trip", de: "Radtour" },
+  "Nova knjiga": { en: "A new book", de: "Ein neues Buch" },
+  "Majhna igrača": { en: "A small toy", de: "Ein kleines Spielzeug" },
   "Pica večer": { en: "Pizza night", de: "Pizzaabend" },
   "Obisk kina": { en: "Trip to the cinema", de: "Kinobesuch" },
   "Izlet po izbiri": { en: "Outing of your choice", de: "Ausflug nach Wahl" },
