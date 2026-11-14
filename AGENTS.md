@@ -1,37 +1,9 @@
-<!-- LOVABLE:BEGIN -->
-> [!IMPORTANT]
-> This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
-> published git history — force pushing, or rebasing/amending/squashing commits
-> that are already pushed — as it rewrites history on Lovable's side and the
-> user will likely lose their project history.
->
-> Commits you push to the connected branch sync back to Lovable and show up in
-> the editor, so keep the branch in a working state.
-
-## What Lovable manages
-
-Rules outside this block are the project's own. Change the pieces below in
-Lovable, not by hand. With the [Lovable MCP](https://mcp.lovable.dev)
-connected, `send_message` asks Lovable to do it; otherwise ask the user to
-use the editor.
-
-- **Database.** Do not add or edit `supabase/migrations/` or `drizzle/`.
-  Ask Lovable to change the schema.
-- **Generated files.** Do not edit a file whose header says it is automatically
-  generated.
-- **AI gateway.** Keep model calls on Lovable's gateway, and keep
-  `LOVABLE_API_KEY` out of browser code.
-- **Connectors.** Lovable provides native connectors. `list_connectors` shows
-  which are enabled; `add_connector` only returns the dashboard link. When a
-  connector is enabled, calls go through the connector gateway and need
-  `LOVABLE_API_KEY`. When Lovable does not provide one, users can bring their
-  own key and store it in Secrets.
-- **Secrets.** Lovable manages them. Do not put secret values in the repo.
-<!-- LOVABLE:END -->
-
 ## Project rules
 - Children are not auth users: the device is signed in as the parent's account; child identity is a per-tab session (src/lib/mode.ts) verified by PIN via security-definer RPCs (`verify_child_pin`, `child_submit`). Why: kids log in with name + PIN only.
 - PIN hashes are never readable by clients (column-level grants on `children`); always select explicit child columns.
 - Recurring chores reset by period key (src/lib/periods.ts); a completion is unique per chore/child/period. Why: no cron needed.
 - Reward points: available = approved chore points minus pending+approved redemptions (src/lib/rewards.ts); children redeem only via `child_redeem` RPC (PIN + balance check). Why: pending requests reserve points so they cannot be double-spent.
 - UI text: Slovenian source strings wrapped in `t()` from src/lib/i18n.ts (en/de dictionary there); language is per-device in localStorage. Why: simple, no extra library.
+- Database: schema changes go in a new timestamped SQL file in `supabase/migrations/` (applied with `supabase db push`); never edit an already applied migration. After a schema change regenerate `src/integrations/supabase/types.ts` with `supabase gen types typescript`.
+- Secrets: `.env` is not committed. Only the Supabase URL and publishable key may live in `VITE_` variables; the service role key is server-only.
+- Package manager: npm (`package-lock.json`).
