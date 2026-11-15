@@ -49,7 +49,9 @@ export function AppShell({
               <n.icon className="h-5 w-5" />
               <span className="flex-1">{n.label}</span>
               {!!n.badge && (
-                <span className="rounded-full bg-status-pending-bg px-2 text-xs text-status-pending">{n.badge}</span>
+                <span className="rounded-full bg-status-pending-bg px-2 text-xs text-status-pending">
+                  {n.badge}
+                </span>
               )}
             </Link>
           ))}
@@ -67,7 +69,9 @@ export function AppShell({
           </div>
           {footer}
         </header>
-        <main className="mx-auto w-full max-w-5xl px-3 pb-28 pt-4 xs:px-4 md:px-8 md:pb-10 md:pt-8">{children}</main>
+        <main className="mx-auto w-full max-w-5xl px-3 pb-28 pt-4 xs:px-4 md:px-8 md:pb-10 md:pt-8">
+          {children}
+        </main>
       </div>
 
       {/* Bottom bar: below md */}

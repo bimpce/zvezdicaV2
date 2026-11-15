@@ -13,7 +13,9 @@ export function StatusBadge({ status }: { status: ChoreStatus }) {
   const m = map[status];
   const t = useT();
   return (
-    <span className={cn("inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold", m.cls)}>
+    <span
+      className={cn("inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold", m.cls)}
+    >
       {t(m.label)}
     </span>
   );

@@ -1,544 +1,532 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.18"
-  }
+    PostgrestVersion: "14.18";
+  };
   public: {
     Tables: {
       child_goals: {
         Row: {
-          child_id: string
-          reward_id: string
-          set_at: string
-        }
+          child_id: string;
+          reward_id: string;
+          set_at: string;
+        };
         Insert: {
-          child_id: string
-          reward_id: string
-          set_at?: string
-        }
+          child_id: string;
+          reward_id: string;
+          set_at?: string;
+        };
         Update: {
-          child_id?: string
-          reward_id?: string
-          set_at?: string
-        }
+          child_id?: string;
+          reward_id?: string;
+          set_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "child_goals_child_id_fkey"
-            columns: ["child_id"]
-            isOneToOne: true
-            referencedRelation: "children"
-            referencedColumns: ["id"]
+            foreignKeyName: "child_goals_child_id_fkey";
+            columns: ["child_id"];
+            isOneToOne: true;
+            referencedRelation: "children";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "child_goals_reward_id_fkey"
-            columns: ["reward_id"]
-            isOneToOne: false
-            referencedRelation: "rewards"
-            referencedColumns: ["id"]
+            foreignKeyName: "child_goals_reward_id_fkey";
+            columns: ["reward_id"];
+            isOneToOne: false;
+            referencedRelation: "rewards";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       child_seen_chores: {
         Row: {
-          child_id: string
-          chore_id: string
-          seen_at: string
-        }
+          child_id: string;
+          chore_id: string;
+          seen_at: string;
+        };
         Insert: {
-          child_id: string
-          chore_id: string
-          seen_at?: string
-        }
+          child_id: string;
+          chore_id: string;
+          seen_at?: string;
+        };
         Update: {
-          child_id?: string
-          chore_id?: string
-          seen_at?: string
-        }
+          child_id?: string;
+          chore_id?: string;
+          seen_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "child_seen_chores_child_id_fkey"
-            columns: ["child_id"]
-            isOneToOne: false
-            referencedRelation: "children"
-            referencedColumns: ["id"]
+            foreignKeyName: "child_seen_chores_child_id_fkey";
+            columns: ["child_id"];
+            isOneToOne: false;
+            referencedRelation: "children";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "child_seen_chores_chore_id_fkey"
-            columns: ["chore_id"]
-            isOneToOne: false
-            referencedRelation: "chores"
-            referencedColumns: ["id"]
+            foreignKeyName: "child_seen_chores_chore_id_fkey";
+            columns: ["chore_id"];
+            isOneToOne: false;
+            referencedRelation: "chores";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       children: {
         Row: {
-          avatar: string
-          created_at: string
-          family_id: string
-          id: string
-          name: string
-          pin_hash: string
-        }
+          avatar: string;
+          created_at: string;
+          family_id: string;
+          id: string;
+          name: string;
+          pin_hash: string;
+        };
         Insert: {
-          avatar?: string
-          created_at?: string
-          family_id: string
-          id?: string
-          name: string
-          pin_hash: string
-        }
+          avatar?: string;
+          created_at?: string;
+          family_id: string;
+          id?: string;
+          name: string;
+          pin_hash: string;
+        };
         Update: {
-          avatar?: string
-          created_at?: string
-          family_id?: string
-          id?: string
-          name?: string
-          pin_hash?: string
-        }
+          avatar?: string;
+          created_at?: string;
+          family_id?: string;
+          id?: string;
+          name?: string;
+          pin_hash?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "children_family_id_fkey"
-            columns: ["family_id"]
-            isOneToOne: false
-            referencedRelation: "families"
-            referencedColumns: ["id"]
+            foreignKeyName: "children_family_id_fkey";
+            columns: ["family_id"];
+            isOneToOne: false;
+            referencedRelation: "families";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       chore_assignments: {
         Row: {
-          child_id: string
-          chore_id: string
-        }
+          child_id: string;
+          chore_id: string;
+        };
         Insert: {
-          child_id: string
-          chore_id: string
-        }
+          child_id: string;
+          chore_id: string;
+        };
         Update: {
-          child_id?: string
-          chore_id?: string
-        }
+          child_id?: string;
+          chore_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "chore_assignments_child_id_fkey"
-            columns: ["child_id"]
-            isOneToOne: false
-            referencedRelation: "children"
-            referencedColumns: ["id"]
+            foreignKeyName: "chore_assignments_child_id_fkey";
+            columns: ["child_id"];
+            isOneToOne: false;
+            referencedRelation: "children";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "chore_assignments_chore_id_fkey"
-            columns: ["chore_id"]
-            isOneToOne: false
-            referencedRelation: "chores"
-            referencedColumns: ["id"]
+            foreignKeyName: "chore_assignments_chore_id_fkey";
+            columns: ["chore_id"];
+            isOneToOne: false;
+            referencedRelation: "chores";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       chores: {
         Row: {
-          created_at: string
-          description: string | null
-          end_date: string | null
-          family_id: string
-          frequency: Database["public"]["Enums"]["chore_frequency"]
-          id: string
-          points: number
-          start_date: string
-          title: string
-        }
+          created_at: string;
+          description: string | null;
+          end_date: string | null;
+          family_id: string;
+          frequency: Database["public"]["Enums"]["chore_frequency"];
+          id: string;
+          points: number;
+          start_date: string;
+          title: string;
+        };
         Insert: {
-          created_at?: string
-          description?: string | null
-          end_date?: string | null
-          family_id: string
-          frequency?: Database["public"]["Enums"]["chore_frequency"]
-          id?: string
-          points?: number
-          start_date?: string
-          title: string
-        }
+          created_at?: string;
+          description?: string | null;
+          end_date?: string | null;
+          family_id: string;
+          frequency?: Database["public"]["Enums"]["chore_frequency"];
+          id?: string;
+          points?: number;
+          start_date?: string;
+          title: string;
+        };
         Update: {
-          created_at?: string
-          description?: string | null
-          end_date?: string | null
-          family_id?: string
-          frequency?: Database["public"]["Enums"]["chore_frequency"]
-          id?: string
-          points?: number
-          start_date?: string
-          title?: string
-        }
+          created_at?: string;
+          description?: string | null;
+          end_date?: string | null;
+          family_id?: string;
+          frequency?: Database["public"]["Enums"]["chore_frequency"];
+          id?: string;
+          points?: number;
+          start_date?: string;
+          title?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "chores_family_id_fkey"
-            columns: ["family_id"]
-            isOneToOne: false
-            referencedRelation: "families"
-            referencedColumns: ["id"]
+            foreignKeyName: "chores_family_id_fkey";
+            columns: ["family_id"];
+            isOneToOne: false;
+            referencedRelation: "families";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       completions: {
         Row: {
-          child_id: string
-          chore_id: string
-          family_id: string
-          id: string
-          note: string | null
-          period_key: string
-          points: number
-          reviewed_at: string | null
-          status: Database["public"]["Enums"]["completion_status"]
-          submitted_at: string
-        }
+          child_id: string;
+          chore_id: string;
+          family_id: string;
+          id: string;
+          note: string | null;
+          period_key: string;
+          points: number;
+          reviewed_at: string | null;
+          status: Database["public"]["Enums"]["completion_status"];
+          submitted_at: string;
+        };
         Insert: {
-          child_id: string
-          chore_id: string
-          family_id: string
-          id?: string
-          note?: string | null
-          period_key: string
-          points: number
-          reviewed_at?: string | null
-          status?: Database["public"]["Enums"]["completion_status"]
-          submitted_at?: string
-        }
+          child_id: string;
+          chore_id: string;
+          family_id: string;
+          id?: string;
+          note?: string | null;
+          period_key: string;
+          points: number;
+          reviewed_at?: string | null;
+          status?: Database["public"]["Enums"]["completion_status"];
+          submitted_at?: string;
+        };
         Update: {
-          child_id?: string
-          chore_id?: string
-          family_id?: string
-          id?: string
-          note?: string | null
-          period_key?: string
-          points?: number
-          reviewed_at?: string | null
-          status?: Database["public"]["Enums"]["completion_status"]
-          submitted_at?: string
-        }
+          child_id?: string;
+          chore_id?: string;
+          family_id?: string;
+          id?: string;
+          note?: string | null;
+          period_key?: string;
+          points?: number;
+          reviewed_at?: string | null;
+          status?: Database["public"]["Enums"]["completion_status"];
+          submitted_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "completions_child_id_fkey"
-            columns: ["child_id"]
-            isOneToOne: false
-            referencedRelation: "children"
-            referencedColumns: ["id"]
+            foreignKeyName: "completions_child_id_fkey";
+            columns: ["child_id"];
+            isOneToOne: false;
+            referencedRelation: "children";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "completions_chore_id_fkey"
-            columns: ["chore_id"]
-            isOneToOne: false
-            referencedRelation: "chores"
-            referencedColumns: ["id"]
+            foreignKeyName: "completions_chore_id_fkey";
+            columns: ["chore_id"];
+            isOneToOne: false;
+            referencedRelation: "chores";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "completions_family_id_fkey"
-            columns: ["family_id"]
-            isOneToOne: false
-            referencedRelation: "families"
-            referencedColumns: ["id"]
+            foreignKeyName: "completions_family_id_fkey";
+            columns: ["family_id"];
+            isOneToOne: false;
+            referencedRelation: "families";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       families: {
         Row: {
-          created_at: string
-          id: string
-          name: string
-          notifications_seen_at: string | null
-          owner_id: string
-          parent_name: string
-        }
+          created_at: string;
+          id: string;
+          name: string;
+          notifications_seen_at: string | null;
+          owner_id: string;
+          parent_name: string;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          name: string
-          notifications_seen_at?: string | null
-          owner_id: string
-          parent_name?: string
-        }
+          created_at?: string;
+          id?: string;
+          name: string;
+          notifications_seen_at?: string | null;
+          owner_id: string;
+          parent_name?: string;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          name?: string
-          notifications_seen_at?: string | null
-          owner_id?: string
-          parent_name?: string
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          id?: string;
+          name?: string;
+          notifications_seen_at?: string | null;
+          owner_id?: string;
+          parent_name?: string;
+        };
+        Relationships: [];
+      };
       reward_redemptions: {
         Row: {
-          child_id: string
-          family_id: string
-          id: string
-          points: number
-          requested_at: string
-          reviewed_at: string | null
-          reward_id: string
-          status: Database["public"]["Enums"]["completion_status"]
-        }
+          child_id: string;
+          family_id: string;
+          id: string;
+          points: number;
+          requested_at: string;
+          reviewed_at: string | null;
+          reward_id: string;
+          status: Database["public"]["Enums"]["completion_status"];
+        };
         Insert: {
-          child_id: string
-          family_id: string
-          id?: string
-          points: number
-          requested_at?: string
-          reviewed_at?: string | null
-          reward_id: string
-          status?: Database["public"]["Enums"]["completion_status"]
-        }
+          child_id: string;
+          family_id: string;
+          id?: string;
+          points: number;
+          requested_at?: string;
+          reviewed_at?: string | null;
+          reward_id: string;
+          status?: Database["public"]["Enums"]["completion_status"];
+        };
         Update: {
-          child_id?: string
-          family_id?: string
-          id?: string
-          points?: number
-          requested_at?: string
-          reviewed_at?: string | null
-          reward_id?: string
-          status?: Database["public"]["Enums"]["completion_status"]
-        }
+          child_id?: string;
+          family_id?: string;
+          id?: string;
+          points?: number;
+          requested_at?: string;
+          reviewed_at?: string | null;
+          reward_id?: string;
+          status?: Database["public"]["Enums"]["completion_status"];
+        };
         Relationships: [
           {
-            foreignKeyName: "reward_redemptions_child_id_fkey"
-            columns: ["child_id"]
-            isOneToOne: false
-            referencedRelation: "children"
-            referencedColumns: ["id"]
+            foreignKeyName: "reward_redemptions_child_id_fkey";
+            columns: ["child_id"];
+            isOneToOne: false;
+            referencedRelation: "children";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "reward_redemptions_family_id_fkey"
-            columns: ["family_id"]
-            isOneToOne: false
-            referencedRelation: "families"
-            referencedColumns: ["id"]
+            foreignKeyName: "reward_redemptions_family_id_fkey";
+            columns: ["family_id"];
+            isOneToOne: false;
+            referencedRelation: "families";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "reward_redemptions_reward_id_fkey"
-            columns: ["reward_id"]
-            isOneToOne: false
-            referencedRelation: "rewards"
-            referencedColumns: ["id"]
+            foreignKeyName: "reward_redemptions_reward_id_fkey";
+            columns: ["reward_id"];
+            isOneToOne: false;
+            referencedRelation: "rewards";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       rewards: {
         Row: {
-          active: boolean
-          child_id: string | null
-          created_at: string
-          emoji: string
-          family_id: string
-          id: string
-          points: number
-          title: string
-        }
+          active: boolean;
+          child_id: string | null;
+          created_at: string;
+          emoji: string;
+          family_id: string;
+          id: string;
+          points: number;
+          title: string;
+        };
         Insert: {
-          active?: boolean
-          child_id?: string | null
-          created_at?: string
-          emoji?: string
-          family_id: string
-          id?: string
-          points?: number
-          title: string
-        }
+          active?: boolean;
+          child_id?: string | null;
+          created_at?: string;
+          emoji?: string;
+          family_id: string;
+          id?: string;
+          points?: number;
+          title: string;
+        };
         Update: {
-          active?: boolean
-          child_id?: string | null
-          created_at?: string
-          emoji?: string
-          family_id?: string
-          id?: string
-          points?: number
-          title?: string
-        }
+          active?: boolean;
+          child_id?: string | null;
+          created_at?: string;
+          emoji?: string;
+          family_id?: string;
+          id?: string;
+          points?: number;
+          title?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "rewards_child_id_fkey"
-            columns: ["child_id"]
-            isOneToOne: false
-            referencedRelation: "children"
-            referencedColumns: ["id"]
+            foreignKeyName: "rewards_child_id_fkey";
+            columns: ["child_id"];
+            isOneToOne: false;
+            referencedRelation: "children";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "rewards_family_id_fkey"
-            columns: ["family_id"]
-            isOneToOne: false
-            referencedRelation: "families"
-            referencedColumns: ["id"]
+            foreignKeyName: "rewards_family_id_fkey";
+            columns: ["family_id"];
+            isOneToOne: false;
+            referencedRelation: "families";
+            referencedColumns: ["id"];
           },
-        ]
-      }
-    }
+        ];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
       add_child: {
-        Args: { _avatar: string; _name: string; _pin: string }
-        Returns: string
-      }
-      child_available_points: { Args: { _child_id: string }; Returns: number }
+        Args: { _avatar: string; _name: string; _pin: string };
+        Returns: string;
+      };
+      child_available_points: { Args: { _child_id: string }; Returns: number };
       child_redeem: {
-        Args: { _child_id: string; _pin: string; _reward_id: string }
-        Returns: undefined
-      }
+        Args: { _child_id: string; _pin: string; _reward_id: string };
+        Returns: undefined;
+      };
       child_submit: {
         Args: {
-          _child_id: string
-          _chore_id: string
-          _period_key: string
-          _pin: string
-        }
-        Returns: undefined
-      }
-      my_family_id: { Args: never; Returns: string }
+          _child_id: string;
+          _chore_id: string;
+          _period_key: string;
+          _pin: string;
+        };
+        Returns: undefined;
+      };
+      my_family_id: { Args: never; Returns: string };
       reset_child_pin: {
-        Args: { _child_id: string; _pin: string }
-        Returns: undefined
-      }
+        Args: { _child_id: string; _pin: string };
+        Returns: undefined;
+      };
       verify_child_pin: {
-        Args: { _child_id: string; _pin: string }
-        Returns: boolean
-      }
-    }
+        Args: { _child_id: string; _pin: string };
+        Returns: boolean;
+      };
+    };
     Enums: {
-      chore_frequency: "once" | "daily" | "weekly" | "monthly" | "yearly"
-      completion_status: "pending" | "approved" | "rejected"
-    }
+      chore_frequency: "once" | "daily" | "weekly" | "monthly" | "yearly";
+      completion_status: "pending" | "approved" | "rejected";
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer R;
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      Insert: infer I;
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+      Update: infer U;
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
   EnumName extends (DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["CompositeTypes"] | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+    : never;
 
 export const Constants = {
   public: {
@@ -547,4 +535,4 @@ export const Constants = {
       completion_status: ["pending", "approved", "rejected"],
     },
   },
-} as const
+} as const;

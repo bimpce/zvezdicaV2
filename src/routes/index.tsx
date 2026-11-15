@@ -10,7 +10,10 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Zvezdica — družinska opravila in točke" },
-      { name: "description", content: "Starši dodelijo opravila, otroci zbirajo točke. Preprosto, pregledno, zabavno." },
+      {
+        name: "description",
+        content: "Starši dodelijo opravila, otroci zbirajo točke. Preprosto, pregledno, zabavno.",
+      },
       { property: "og:title", content: "Zvezdica — družinska opravila in točke" },
       { property: "og:description", content: "Starši dodelijo opravila, otroci zbirajo točke." },
     ],
@@ -32,7 +35,11 @@ function Index() {
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col items-center gap-8 px-4 py-8 md:flex-row md:gap-12 md:px-8">
       <div className="flex flex-1 flex-col gap-5 text-center md:text-left">
-        <div className="flex justify-center gap-1 md:justify-start" role="group" aria-label="Jezik / Language">
+        <div
+          className="flex justify-center gap-1 md:justify-start"
+          role="group"
+          aria-label="Jezik / Language"
+        >
           {LANGS.map((l) => (
             <Button
               key={l.code}
@@ -58,10 +65,14 @@ function Index() {
         </p>
         <div className="flex flex-col gap-3 xs:flex-row xs:justify-center md:justify-start">
           <Button asChild variant="hero" size="lg" className="btn-block">
-            <Link to="/auth" search={{ mode: "signup" }}>{t("Ustvari družino")}</Link>
+            <Link to="/auth" search={{ mode: "signup" }}>
+              {t("Ustvari družino")}
+            </Link>
           </Button>
           <Button asChild variant="outline" size="lg" className="btn-block">
-            <Link to="/auth" search={{ mode: "login" }}>{t("Prijava v družino")}</Link>
+            <Link to="/auth" search={{ mode: "login" }}>
+              {t("Prijava v družino")}
+            </Link>
           </Button>
         </div>
       </div>

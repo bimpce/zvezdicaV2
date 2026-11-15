@@ -15,14 +15,28 @@ export function RedemptionList() {
   const pending = reds.filter((r) => r.status === "pending");
 
   async function review(r: Redemption, status: "approved" | "rejected") {
-    const { error } = await supabase.from("reward_redemptions").update({ status, reviewed_at: new Date().toISOString() }).eq("id", r.id);
-    if (error) { toast.error(errMsg(error)); return; }
-    toast.success(status === "approved" ? t("Nagrada izročena! −{n} točk", { n: r.points }) : t("Zahtevek zavrnjen, točke vrnjene"));
+    const { error } = await supabase
+      .from("reward_redemptions")
+      .update({ status, reviewed_at: new Date().toISOString() })
+      .eq("id", r.id);
+    if (error) {
+      toast.error(errMsg(error));
+      return;
+    }
+    toast.success(
+      status === "approved"
+        ? t("Nagrada izročena! −{n} točk", { n: r.points })
+        : t("Zahtevek zavrnjen, točke vrnjene"),
+    );
     refresh();
   }
 
   if (pending.length === 0)
-    return <p className="rounded-2xl bg-muted p-6 text-center text-muted-foreground">{t("Ni nagrad, ki čakajo na izročitev.")}</p>;
+    return (
+      <p className="rounded-2xl bg-muted p-6 text-center text-muted-foreground">
+        {t("Ni nagrad, ki čakajo na izročitev.")}
+      </p>
+    );
 
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -32,18 +46,38 @@ export function RedemptionList() {
         return (
           <div key={r.id} className="rounded-2xl bg-card p-4 shadow-soft">
             <div className="flex items-start gap-3">
-              <span className="avatar-md flex shrink-0 items-center justify-center rounded-full bg-secondary">{rw?.emoji ?? "🎁"}</span>
+              <span className="avatar-md flex shrink-0 items-center justify-center rounded-full bg-secondary">
+                {rw?.emoji ?? "🎁"}
+              </span>
               <div className="min-w-0 flex-1">
                 <h3 className="break-words">{rw?.title ?? t("Nagrada")}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {kid?.avatar} {kid?.name} · {new Date(r.requested_at).toLocaleString(t.locale, { dateStyle: "short", timeStyle: "short" })}
+                  {kid?.avatar} {kid?.name} ·{" "}
+                  {new Date(r.requested_at).toLocaleString(t.locale, {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  })}
                 </p>
               </div>
-              <span className="shrink-0 rounded-full bg-sun px-2.5 py-1 text-sm font-extrabold text-sun-foreground">{r.points}</span>
+              <span className="shrink-0 rounded-full bg-sun px-2.5 py-1 text-sm font-extrabold text-sun-foreground">
+                {r.points}
+              </span>
             </div>
             <div className="mt-4 flex flex-col gap-2 xs:flex-row">
-              <Button variant="success" className="btn-block xs:flex-1" onClick={() => review(r, "approved")}><Gift /> {t("Potrdi in izroči")}</Button>
-              <Button variant="outline" className="btn-block xs:flex-1" onClick={() => review(r, "rejected")}><X /> {t("Zavrni")}</Button>
+              <Button
+                variant="success"
+                className="btn-block xs:flex-1"
+                onClick={() => review(r, "approved")}
+              >
+                <Gift /> {t("Potrdi in izroči")}
+              </Button>
+              <Button
+                variant="outline"
+                className="btn-block xs:flex-1"
+                onClick={() => review(r, "rejected")}
+              >
+                <X /> {t("Zavrni")}
+              </Button>
             </div>
           </div>
         );

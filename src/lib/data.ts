@@ -4,7 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Frequency } from "./periods";
 import { isChoreActive, periodKey } from "./periods";
 
-export type Child = { id: string; family_id: string; name: string; avatar: string; created_at: string };
+export type Child = {
+  id: string;
+  family_id: string;
+  name: string;
+  avatar: string;
+  created_at: string;
+};
 export type Chore = {
   id: string;
   family_id: string;
@@ -113,6 +119,7 @@ export function childChoreList(childId: string, chores: Chore[], completions: Co
 }
 
 export function errMsg(e: unknown) {
-  if (e && typeof e === "object" && "message" in e) return String((e as { message: string }).message);
+  if (e && typeof e === "object" && "message" in e)
+    return String((e as { message: string }).message);
   return translate(getLang(), "Prišlo je do napake");
 }

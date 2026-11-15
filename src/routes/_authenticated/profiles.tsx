@@ -38,13 +38,22 @@ function Profiles() {
 
   async function tryPin(value: string) {
     if (!child) return;
-    if (!isValidPin(value)) { toast.error(t("PIN mora imeti točno 6 številk.")); return; }
+    if (!isValidPin(value)) {
+      toast.error(t("PIN mora imeti točno 6 številk."));
+      return;
+    }
     setBusy(true);
-    const { data, error } = await supabase.rpc("verify_child_pin", { _child_id: child.id, _pin: value });
+    const { data, error } = await supabase.rpc("verify_child_pin", {
+      _child_id: child.id,
+      _pin: value,
+    });
     setBusy(false);
     if (error || !data) {
       setPin("");
-      { toast.error(t("Napačen PIN. Poskusi znova.")); return; }
+      {
+        toast.error(t("Napačen PIN. Poskusi znova."));
+        return;
+      }
     }
     setMode({ kind: "child", id: child.id, pin: value });
     navigate({ to: "/child/$childId", params: { childId: child.id } });
@@ -54,9 +63,15 @@ function Profiles() {
     e.preventDefault();
     setBusy(true);
     const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase.auth.signInWithPassword({ email: u.user?.email ?? "", password: pw });
+    const { error } = await supabase.auth.signInWithPassword({
+      email: u.user?.email ?? "",
+      password: pw,
+    });
     setBusy(false);
-    if (error) { toast.error(t("Napačno geslo.")); return; }
+    if (error) {
+      toast.error(t("Napačno geslo."));
+      return;
+    }
     setMode({ kind: "parent" });
     navigate({ to: "/parent" });
   }
@@ -71,10 +86,15 @@ function Profiles() {
         {children.map((c) => (
           <button
             key={c.id}
-            onClick={() => { setChild(c); setPin(""); }}
+            onClick={() => {
+              setChild(c);
+              setPin("");
+            }}
             className="flex min-h-24 flex-col items-center justify-center gap-2 rounded-3xl bg-card p-5 shadow-soft transition hover:-translate-y-0.5"
           >
-            <span className="avatar-lg flex items-center justify-center rounded-full bg-secondary">{c.avatar}</span>
+            <span className="avatar-lg flex items-center justify-center rounded-full bg-secondary">
+              {c.avatar}
+            </span>
             <span className="font-display text-lg font-semibold">{c.name}</span>
           </button>
         ))}
@@ -87,9 +107,19 @@ function Profiles() {
         </button>
       </div>
       {children.length === 0 && (
-        <p className="mt-6 text-center text-muted-foreground">{t("Ni še otrok. Prijavi se kot starš in jih dodaj.")}</p>
+        <p className="mt-6 text-center text-muted-foreground">
+          {t("Ni še otrok. Prijavi se kot starš in jih dodaj.")}
+        </p>
       )}
-      <Button variant="ghost" className="mx-auto mt-10" onClick={() => { setMode(null); supabase.auth.signOut(); navigate({ to: "/" }); }}>
+      <Button
+        variant="ghost"
+        className="mx-auto mt-10"
+        onClick={() => {
+          setMode(null);
+          supabase.auth.signOut();
+          navigate({ to: "/" });
+        }}
+      >
         <LogOut /> {t("Odjava naprave")}
       </Button>
 
@@ -102,7 +132,13 @@ function Profiles() {
           </DialogHeader>
           <p className="text-center text-muted-foreground">{t("Vnesi svoj 6-mestni PIN")}</p>
           <PinInput value={pin} onChange={setPin} autoFocus onComplete={tryPin} />
-          <Button variant="hero" size="lg" className="w-full" disabled={busy} onClick={() => tryPin(pin)}>
+          <Button
+            variant="hero"
+            size="lg"
+            className="w-full"
+            disabled={busy}
+            onClick={() => tryPin(pin)}
+          >
             {t("Prijava")}
           </Button>
         </DialogContent>
@@ -110,10 +146,21 @@ function Profiles() {
 
       <Dialog open={parentOpen} onOpenChange={setParentOpen}>
         <DialogContent className="max-w-[calc(100vw-2rem)] rounded-3xl sm:max-w-md">
-          <DialogHeader><DialogTitle className="font-display text-2xl">{t("Starševski dostop")}</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl">{t("Starševski dostop")}</DialogTitle>
+          </DialogHeader>
           <form onSubmit={parentLogin} className="space-y-4">
-            <Input type="password" placeholder={t("Geslo")} value={pw} onChange={(e) => setPw(e.target.value)} autoFocus required />
-            <Button type="submit" variant="hero" size="lg" className="w-full" disabled={busy}>{t("Prijava")}</Button>
+            <Input
+              type="password"
+              placeholder={t("Geslo")}
+              value={pw}
+              onChange={(e) => setPw(e.target.value)}
+              autoFocus
+              required
+            />
+            <Button type="submit" variant="hero" size="lg" className="w-full" disabled={busy}>
+              {t("Prijava")}
+            </Button>
           </form>
         </DialogContent>
       </Dialog>

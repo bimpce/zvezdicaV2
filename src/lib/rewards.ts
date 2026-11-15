@@ -54,13 +54,20 @@ export function useGoal(childId: string) {
   const q = useQuery({
     queryKey: ["goal", childId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("child_goals").select("reward_id").eq("child_id", childId).maybeSingle();
+      const { data, error } = await supabase
+        .from("child_goals")
+        .select("reward_id")
+        .eq("child_id", childId)
+        .maybeSingle();
       if (error) throw error;
       return data?.reward_id ?? null;
     },
   });
   async function setGoal(rewardId: string | null) {
-    if (rewardId) await supabase.from("child_goals").upsert({ child_id: childId, reward_id: rewardId, set_at: new Date().toISOString() });
+    if (rewardId)
+      await supabase
+        .from("child_goals")
+        .upsert({ child_id: childId, reward_id: rewardId, set_at: new Date().toISOString() });
     else await supabase.from("child_goals").delete().eq("child_id", childId);
     qc.invalidateQueries({ queryKey: ["goal", childId] });
   }
@@ -68,9 +75,17 @@ export function useGoal(childId: string) {
 }
 
 /** Earned (approved chores) minus spent/reserved (approved + pending redemptions). */
-export function availablePoints(childId: string, completions: Pick<Completion, "child_id" | "status" | "points">[], redemptions: Pick<Redemption, "child_id" | "status" | "points">[]) {
-  const earned = completions.filter((c) => c.child_id === childId && c.status === "approved").reduce((s, c) => s + c.points, 0);
-  const spent = redemptions.filter((r) => r.child_id === childId && r.status !== "rejected").reduce((s, r) => s + r.points, 0);
+export function availablePoints(
+  childId: string,
+  completions: Pick<Completion, "child_id" | "status" | "points">[],
+  redemptions: Pick<Redemption, "child_id" | "status" | "points">[],
+) {
+  const earned = completions
+    .filter((c) => c.child_id === childId && c.status === "approved")
+    .reduce((s, c) => s + c.points, 0);
+  const spent = redemptions
+    .filter((r) => r.child_id === childId && r.status !== "rejected")
+    .reduce((s, r) => s + r.points, 0);
   return earned - spent;
 }
 

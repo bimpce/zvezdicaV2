@@ -6,7 +6,14 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { useChildren, useChores, useCompletions } from "@/lib/data";
 
 export const Route = createFileRoute("/_authenticated/parent/approvals")({
-  head: () => ({ meta: [{ title: "Potrditve | Zvezdica" }, { name: "description", content: "Potrdi ali zavrni opravljena opravila." }, { property: "og:title", content: "Potrditve | Zvezdica" }, { property: "og:description", content: "Potrdi ali zavrni opravljena opravila." }] }),
+  head: () => ({
+    meta: [
+      { title: "Potrditve | Zvezdica" },
+      { name: "description", content: "Potrdi ali zavrni opravljena opravila." },
+      { property: "og:title", content: "Potrditve | Zvezdica" },
+      { property: "og:description", content: "Potrdi ali zavrni opravljena opravila." },
+    ],
+  }),
   component: Approvals,
 });
 
@@ -32,14 +39,23 @@ function Approvals() {
           {history.map((c) => {
             const kid = kids.find((k) => k.id === c.child_id);
             return (
-              <li key={c.id} className="flex flex-col gap-1 p-4 xs:flex-row xs:items-center xs:gap-3">
+              <li
+                key={c.id}
+                className="flex flex-col gap-1 p-4 xs:flex-row xs:items-center xs:gap-3"
+              >
                 <span className="min-w-0 flex-1 break-words font-bold">
                   {kid?.avatar} {kid?.name} — {chores.find((x) => x.id === c.chore_id)?.title}
-                  {c.note && <span className="block text-sm font-normal text-muted-foreground">„{c.note}"</span>}
+                  {c.note && (
+                    <span className="block text-sm font-normal text-muted-foreground">
+                      „{c.note}"
+                    </span>
+                  )}
                 </span>
                 <span className="flex items-center gap-2">
                   <StatusBadge status={c.status} />
-                  {c.status === "approved" && <span className="text-sm font-extrabold text-status-approved">+{c.points}</span>}
+                  {c.status === "approved" && (
+                    <span className="text-sm font-extrabold text-status-approved">+{c.points}</span>
+                  )}
                 </span>
               </li>
             );
