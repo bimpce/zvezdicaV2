@@ -7,14 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { errMsg } from "@/lib/data";
+import { authErrorText } from "@/lib/auth-errors";
 import { unlockParent } from "@/lib/parent";
 
-type Mode = "signup" | "login";
+type Mode = "signup" | "login" | "forgot";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>): { mode: Mode } => ({
-    mode: s["mode"] === "signup" ? "signup" : "login",
+    mode: s["mode"] === "signup" ? "signup" : s["mode"] === "forgot" ? "forgot" : "login",
   }),
   head: () => ({
     meta: [
@@ -45,31 +45,41 @@ function AuthPage() {
     return () => clearTimeout(id);
   }, [cooldown]);
   const redirectTo = () => window.location.origin + "/profiles";
-
-  /** Readable text for the sign-up / email errors Supabase returns. */
-  function authError(err: unknown) {
-    const code = err && typeof err === "object" ? (err as { code?: unknown }).code : undefined;
-    if (code === "over_email_send_rate_limit")
-      return t("Poslanih je bilo preveč sporočil. Poskusi znova čez nekaj minut.");
-    if (code === "user_already_exists")
-      return t("Ta e-poštni naslov je že registriran. Prijavi se.");
-    return errMsg(err);
-  }
+  const authError = (err: unknown) => authErrorText(t, err);
 
   async function resend() {
     if (cooldown > 0 || !f.email) return;
     setBusy(true);
-    const { error } = await supabase.auth.resend({
-      type: "signup",
-      email: f.email,
-      options: { emailRedirectTo: redirectTo() },
-    });
+    const { error } =
+      mode === "forgot"
+        ? await supabase.auth.resetPasswordForEmail(f.email, { redirectTo: resetRedirect() })
+        : await supabase.auth.resend({
+            type: "signup",
+            email: f.email,
+            options: { emailRedirectTo: redirectTo() },
+          });
     setBusy(false);
     if (error) {
       toast.error(authError(error));
       return;
     }
     toast.success(t("Sporočilo smo poslali znova."));
+    setCooldown(60);
+  }
+
+  /** "Forgot password": email a link to the page where a new password is set. */
+  async function requestReset(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(f.email.trim(), {
+      redirectTo: resetRedirect(),
+    });
+    setBusy(false);
+    if (error) {
+      toast.error(authError(error));
+      return;
+    }
+    setSent(true);
     setCooldown(60);
   }
 
@@ -145,10 +155,15 @@ function AuthPage() {
           <div className="space-y-3 text-center">
             <h1>{t("Preveri e-pošto 📬")}</h1>
             <p className="text-muted-foreground">
-              {t(
-                "Poslali smo ti povezavo za potrditev na {email}. Po potrditvi se prijavi in dodaj otroke.",
-                { email: f.email },
-              )}
+              {mode === "forgot"
+                ? t(
+                    "Če obstaja račun z naslovom {email}, smo nanj poslali povezavo za novo geslo.",
+                    { email: f.email },
+                  )
+                : t(
+                    "Poslali smo ti povezavo za potrditev na {email}. Po potrditvi se prijavi in dodaj otroke.",
+                    { email: f.email },
+                  )}
             </p>
             <p className="text-sm text-muted-foreground">
               {t("Ne najdeš sporočila? Preveri mapo z neželeno pošto ali ga pošlji znova.")}
@@ -168,6 +183,30 @@ function AuthPage() {
               </Link>
             </Button>
           </div>
+        ) : mode === "forgot" ? (
+          <form onSubmit={requestReset} className="space-y-4">
+            <h1>{t("Pozabljeno geslo")}</h1>
+            <p className="text-muted-foreground">
+              {t("Vpiši e-poštni naslov družine in poslali ti bomo povezavo za novo geslo.")}
+            </p>
+            <Field label={t("E-poštni naslov")}>
+              <Input
+                type="email"
+                value={f.email}
+                onChange={set("email")}
+                required
+                autoComplete="email"
+              />
+            </Field>
+            <Button type="submit" variant="hero" size="lg" disabled={busy} className="w-full">
+              {busy ? t("Trenutek ...") : t("Pošlji povezavo")}
+            </Button>
+            <p className="text-center text-sm">
+              <Link to="/auth" search={{ mode: "login" }} className="font-bold text-primary">
+                {t("Na prijavo")}
+              </Link>
+            </p>
+          </form>
         ) : (
           <form onSubmit={submit} className="space-y-4">
             <h1>{mode === "signup" ? t("Ustvari družino") : t("Prijava v družino")}</h1>
@@ -210,6 +249,17 @@ function AuthPage() {
                 autoComplete={mode === "signup" ? "new-password" : "current-password"}
               />
             </Field>
+            {mode === "login" && (
+              <p className="-mt-2 text-right text-sm">
+                <Link
+                  to="/auth"
+                  search={{ mode: "forgot" }}
+                  className="inline-flex min-h-11 items-center font-bold text-primary"
+                >
+                  {t("Pozabljeno geslo?")}
+                </Link>
+              </p>
+            )}
             <Button type="submit" variant="hero" size="lg" disabled={busy} className="w-full">
               {busy ? t("Trenutek ...") : mode === "signup" ? t("Ustvari družino") : t("Prijava")}
             </Button>
@@ -229,6 +279,9 @@ function AuthPage() {
     </main>
   );
 }
+
+/** Page the password-reset email links to (must be in Supabase's Redirect URLs). */
+const resetRedirect = () => window.location.origin + "/reset-password";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (

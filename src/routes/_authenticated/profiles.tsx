@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useT, useTitle } from "@/lib/i18n";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -162,6 +162,15 @@ function Profiles() {
             <Button type="submit" variant="hero" size="lg" className="w-full" disabled={busy}>
               {t("Prijava")}
             </Button>
+            <p className="text-center text-sm">
+              <Link
+                to="/auth"
+                search={{ mode: "forgot" }}
+                className="inline-flex min-h-11 items-center font-bold text-primary"
+              >
+                {t("Pozabljeno geslo?")}
+              </Link>
+            </p>
           </form>
         </DialogContent>
       </Dialog>

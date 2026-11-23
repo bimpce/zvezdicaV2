@@ -166,6 +166,40 @@ const dict: D = {
     de: "Falsche E-Mail oder falsches Passwort.",
   },
   "Preveri e-pošto 📬": { en: "Check your email 📬", de: "Prüfe deine E-Mails 📬" },
+  // password reset
+  "Pozabljeno geslo?": { en: "Forgot password?", de: "Passwort vergessen?" },
+  "Pozabljeno geslo": { en: "Forgot password", de: "Passwort vergessen" },
+  "Vpiši e-poštni naslov družine in poslali ti bomo povezavo za novo geslo.": {
+    en: "Enter the family's email address and we'll send you a link to set a new password.",
+    de: "Gib die E-Mail-Adresse der Familie ein und wir senden dir einen Link für ein neues Passwort.",
+  },
+  "Pošlji povezavo": { en: "Send link", de: "Link senden" },
+  "Če obstaja račun z naslovom {email}, smo nanj poslali povezavo za novo geslo.": {
+    en: "If there is an account for {email}, we sent a link to set a new password.",
+    de: "Falls es ein Konto für {email} gibt, haben wir einen Link für ein neues Passwort gesendet.",
+  },
+  "Novo geslo": { en: "New password", de: "Neues Passwort" },
+  "Ponovi geslo": { en: "Repeat password", de: "Passwort wiederholen" },
+  "Shrani novo geslo": { en: "Save new password", de: "Neues Passwort speichern" },
+  "Gesli se ne ujemata.": {
+    en: "The passwords don't match.",
+    de: "Die Passwörter stimmen nicht überein.",
+  },
+  "Geslo je spremenjeno.": { en: "Password changed.", de: "Passwort geändert." },
+  "Povezava ne velja": { en: "Link not valid", de: "Link ungültig" },
+  "Povezava za novo geslo je potekla ali je bila že uporabljena. Zahtevaj novo.": {
+    en: "The password link has expired or was already used. Request a new one.",
+    de: "Der Link ist abgelaufen oder wurde schon benutzt. Fordere einen neuen an.",
+  },
+  "Novo geslo mora biti drugačno od starega.": {
+    en: "The new password must be different from the old one.",
+    de: "Das neue Passwort muss sich vom alten unterscheiden.",
+  },
+  "Geslo je prešibko. Izberi daljše geslo.": {
+    en: "The password is too weak. Choose a longer one.",
+    de: "Das Passwort ist zu schwach. Wähle ein längeres.",
+  },
+  "Novo geslo | Zvezdica": { en: "New password | Zvezdica", de: "Neues Passwort | Zvezdica" },
   "Poslali smo ti povezavo za potrditev na {email}. Po potrditvi se prijavi in dodaj otroke.": {
     en: "We sent a confirmation link to {email}. After confirming, log in and add your kids.",
     de: "Wir haben einen Bestätigungslink an {email} gesendet. Melde dich danach an und füge Kinder hinzu.",
