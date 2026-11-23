@@ -9,7 +9,7 @@
   "status": "ready",
   "note": "Ready: all 2 checks pass. 1 question about the original is still open.",
   "created_ms": 1795451803872,
-  "updated_ms": 1795454140224,
+  "updated_ms": 1795454551835,
   "checks": [
     {
       "round": 1,
@@ -46,6 +46,24 @@
       "note": "`npm test` passed.",
       "artifacts": [],
       "at_ms": 1795454124560
+    },
+    {
+      "round": 3,
+      "check": "build",
+      "passed": true,
+      "similarity": null,
+      "note": "`npm run build --if-present` passed.",
+      "artifacts": [],
+      "at_ms": 1795454538783
+    },
+    {
+      "round": 3,
+      "check": "own-tests",
+      "passed": true,
+      "similarity": null,
+      "note": "`npm test` passed.",
+      "artifacts": [],
+      "at_ms": 1795454542820
     }
   ],
   "agent_session": "b988d136-df96-40e0-8540-4fd466e3de85",
@@ -53,7 +71,7 @@
   "agent_session_deep": false,
   "capture_deep": false,
   "allowed_actions": [],
-  "last_reply": "Two things are left to fix. Parent mode is only enforced in the browser, and wrong PIN guesses are unlimited. I'll move both checks into the database: parent mode will need a password check done by the database, and too many wrong guesses will lock the profile for a while.Now the app side: the parent's password unlocks parent mode through the database, and the app sends that unlock with every change.Now a small helper for entering and leaving parent mode.Updating the child's screen so a wrong or changed PIN is handled the new way; then I'll build and test.Also clearing the one remaining code-style warning.Nothing else uses that export, so I'll stop exporting it.Types, lint (now with no warnings), the 25 tests and the build all pass. Running the final check.Parent mode can now only be opened with the parent's account password, which your database checks itself, so a child can no longer get parent access or approve their own chores by tampering with the browser. Five wrong PINs or passwords in a row lock that profile for 15 minutes. The build, all 25 tests and the final check pass, and the last code warning is gone. None of this has been tried against your real database yet, and it only takes effect once you apply both database updates with `npx supabase db push`; also turn on \"Secure password change\" in your Supabase settings so a child can't change the parent's password from the signed-in device.",
+  "last_reply": "The screenshot shows a browser security error about the page linking to a local file. I'll look for where that comes from, and also check how the sign-up email is sent.The sign-up page now has a \"Send again\" button for the confirmation email. It also tells you when an address is already registered (Supabase sends no new email in that case), and logging in before confirming now says the address isn't confirmed yet instead of \"wrong password\". The most likely reason no email arrived is a Supabase setting I can't change: its built-in email service only sends to your project's team members' addresses, a few times an hour. To fix that, add your own email provider under Authentication → SMTP in the Supabase dashboard, and put `https://zvezdicav2.vercel.app` in the Site URL and Redirect URLs. The \"file:///\" error in your screenshot doesn't come from the app (nothing in it links to a local file); it's probably a browser extension or Firefox's privacy protection, and I haven't tested any of this against your live site.",
   "asset_budget_usd": 5.0,
   "generate_assets": false,
   "app_in_root": true,

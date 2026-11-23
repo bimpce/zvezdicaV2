@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useT, useTitle } from "@/lib/i18n";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,41 @@ function AuthPage() {
   const [f, setF] = useState({ family: "", name: "", email: "", password: "" });
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setF({ ...f, [k]: e.target.value });
+  // Seconds until "send again" is allowed (Supabase limits how many emails it sends).
+  const [cooldown, setCooldown] = useState(0);
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(id);
+  }, [cooldown]);
+  const redirectTo = () => window.location.origin + "/profiles";
+
+  /** Readable text for the sign-up / email errors Supabase returns. */
+  function authError(err: unknown) {
+    const code = err && typeof err === "object" ? (err as { code?: unknown }).code : undefined;
+    if (code === "over_email_send_rate_limit")
+      return t("Poslanih je bilo preveč sporočil. Poskusi znova čez nekaj minut.");
+    if (code === "user_already_exists")
+      return t("Ta e-poštni naslov je že registriran. Prijavi se.");
+    return errMsg(err);
+  }
+
+  async function resend() {
+    if (cooldown > 0 || !f.email) return;
+    setBusy(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: f.email,
+      options: { emailRedirectTo: redirectTo() },
+    });
+    setBusy(false);
+    if (error) {
+      toast.error(authError(error));
+      return;
+    }
+    toast.success(t("Sporočilo smo poslali znova."));
+    setCooldown(60);
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -55,13 +90,23 @@ function AuthPage() {
           email: f.email,
           password: f.password,
           options: {
-            emailRedirectTo: window.location.origin + "/profiles",
+            emailRedirectTo: redirectTo(),
             data: { family_name: f.family.trim(), parent_name: f.name.trim() },
           },
         });
         if (error) throw error;
-        if (!data.session) setSent(true);
-        else if (await unlockParent(f.password).catch(() => false))
+        // An already registered address gets no new email: Supabase answers with a user
+        // that has no identities (to hide which addresses exist). Say so instead of
+        // promising an email that never comes.
+        if (data.user && data.user.identities?.length === 0) {
+          toast.error(t("Ta e-poštni naslov je že registriran. Prijavi se."));
+          navigate({ to: "/auth", search: { mode: "login" } });
+          return;
+        }
+        if (!data.session) {
+          setSent(true);
+          setCooldown(60);
+        } else if (await unlockParent(f.password).catch(() => false))
           navigate({ to: "/parent/children", search: { welcome: true } });
         else navigate({ to: "/profiles" });
       } else {
@@ -69,13 +114,19 @@ function AuthPage() {
           email: f.email,
           password: f.password,
         });
+        if (error?.code === "email_not_confirmed") {
+          // Not "wrong password": the address is just not confirmed yet. Offer a new email.
+          toast.error(t("E-poštni naslov še ni potrjen."));
+          setSent(true);
+          return;
+        }
         if (error) throw new Error(t("Napačen e-poštni naslov ali geslo."));
         // Same password opens parent mode in the database; if that fails, pick a profile.
         const ok = await unlockParent(f.password).catch(() => false);
         navigate({ to: ok ? "/parent" : "/profiles" });
       }
     } catch (err) {
-      toast.error(errMsg(err));
+      toast.error(authError(err));
     } finally {
       setBusy(false);
     }
@@ -99,6 +150,18 @@ function AuthPage() {
                 { email: f.email },
               )}
             </p>
+            <p className="text-sm text-muted-foreground">
+              {t("Ne najdeš sporočila? Preveri mapo z neželeno pošto ali ga pošlji znova.")}
+            </p>
+            <Button
+              type="button"
+              variant="hero"
+              className="btn-block"
+              disabled={busy || cooldown > 0}
+              onClick={resend}
+            >
+              {cooldown > 0 ? t("Pošlji znova ({n} s)", { n: cooldown }) : t("Pošlji znova")}
+            </Button>
             <Button asChild variant="outline" className="btn-block">
               <Link to="/auth" search={{ mode: "login" }} onClick={() => setSent(false)}>
                 {t("Na prijavo")}

@@ -171,6 +171,28 @@ const dict: D = {
     de: "Wir haben einen Bestätigungslink an {email} gesendet. Melde dich danach an und füge Kinder hinzu.",
   },
   "Na prijavo": { en: "To login", de: "Zur Anmeldung" },
+  "Ne najdeš sporočila? Preveri mapo z neželeno pošto ali ga pošlji znova.": {
+    en: "Can't find the email? Check your spam folder or send it again.",
+    de: "E-Mail nicht gefunden? Schau im Spam-Ordner nach oder sende sie erneut.",
+  },
+  "Pošlji znova": { en: "Send again", de: "Erneut senden" },
+  "Pošlji znova ({n} s)": { en: "Send again ({n} s)", de: "Erneut senden ({n} s)" },
+  "Sporočilo smo poslali znova.": {
+    en: "We sent the email again.",
+    de: "Wir haben die E-Mail erneut gesendet.",
+  },
+  "Poslanih je bilo preveč sporočil. Poskusi znova čez nekaj minut.": {
+    en: "Too many emails were sent. Try again in a few minutes.",
+    de: "Es wurden zu viele E-Mails gesendet. Versuch es in ein paar Minuten erneut.",
+  },
+  "Ta e-poštni naslov je že registriran. Prijavi se.": {
+    en: "This email is already registered. Please log in.",
+    de: "Diese E-Mail ist bereits registriert. Bitte melde dich an.",
+  },
+  "E-poštni naslov še ni potrjen.": {
+    en: "This email address isn't confirmed yet.",
+    de: "Diese E-Mail-Adresse ist noch nicht bestätigt.",
+  },
   "Ime družine": { en: "Family name", de: "Familienname" },
   "Tvoje ime": { en: "Your name", de: "Dein Name" },
   "E-poštni naslov": { en: "Email address", de: "E-Mail-Adresse" },
