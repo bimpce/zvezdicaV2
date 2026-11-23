@@ -13,14 +13,23 @@ let current: Lang | null = null;
 export function getLang(): Lang {
   if (typeof window === "undefined") return "sl";
   if (!current) {
-    const v = localStorage.getItem(KEY);
+    let v: string | null = null;
+    try {
+      v = window.localStorage.getItem(KEY);
+    } catch {
+      // storage blocked (private mode, strict settings): fall back to Slovenian
+    }
     current = v === "en" || v === "de" ? v : "sl";
   }
   return current;
 }
 export function setLang(l: Lang) {
   current = l;
-  localStorage.setItem(KEY, l);
+  try {
+    window.localStorage.setItem(KEY, l);
+  } catch {
+    // storage blocked: the choice still applies until the page is reloaded
+  }
   document.documentElement.lang = l;
   listeners.forEach((f) => f());
 }
@@ -78,6 +87,46 @@ const dict: D = {
   "Prišlo je do napake": { en: "Something went wrong", de: "Etwas ist schiefgelaufen" },
   Jezik: { en: "Language", de: "Sprache" },
   Zapri: { en: "Close", de: "Schließen" },
+  // not found / error pages
+  "Strani ni mogoče najti": { en: "Page not found", de: "Seite nicht gefunden" },
+  "Stran, ki jo iščeš, ne obstaja ali je bila premaknjena.": {
+    en: "The page you're looking for doesn't exist or has been moved.",
+    de: "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+  },
+  "Na začetek": { en: "Go home", de: "Zur Startseite" },
+  "Stran se ni naložila": { en: "This page didn't load", de: "Die Seite wurde nicht geladen" },
+  "Nekaj je šlo narobe. Poskusi znova ali se vrni na začetek.": {
+    en: "Something went wrong. Try again or head back home.",
+    de: "Etwas ist schiefgelaufen. Versuch es nochmal oder geh zur Startseite.",
+  },
+  // database error messages (raised in supabase/migrations, shown via errMsg)
+  "Napačen PIN": { en: "Wrong PIN", de: "Falsche PIN" },
+  "Ni družine": { en: "No family found", de: "Keine Familie gefunden" },
+  "PIN mora imeti točno 6 številk": {
+    en: "PIN must have exactly 6 digits",
+    de: "Die PIN muss genau 6 Ziffern haben",
+  },
+  "Ime je obvezno": { en: "Name is required", de: "Name ist erforderlich" },
+  "Otrok ne obstaja": { en: "Child not found", de: "Kind nicht gefunden" },
+  "Opravilo ni dodeljeno": { en: "Chore is not assigned", de: "Aufgabe ist nicht zugewiesen" },
+  "Opravilo trenutno ni na voljo": {
+    en: "This chore isn't available right now",
+    de: "Diese Aufgabe ist gerade nicht verfügbar",
+  },
+  "Nagrada ni na voljo": { en: "Reward not available", de: "Belohnung nicht verfügbar" },
+  "Premalo točk": { en: "Not enough points", de: "Nicht genug Punkte" },
+  "Preveč napačnih poskusov. Počakaj 15 minut.": {
+    en: "Too many wrong tries. Wait 15 minutes.",
+    de: "Zu viele falsche Versuche. Warte 15 Minuten.",
+  },
+  "Potreben je starševski dostop": {
+    en: "Parent access is required",
+    de: "Elternzugang ist erforderlich",
+  },
+  "Starševski dostop je potekel. Prijavi se znova.": {
+    en: "Parent access expired. Please log in again.",
+    de: "Der Elternzugang ist abgelaufen. Bitte melde dich erneut an.",
+  },
   // status / frequency
   "Čaka na izvedbo": { en: "To do", de: "Zu erledigen" },
   "V pregledu": { en: "In review", de: "In Prüfung" },
@@ -286,6 +335,11 @@ const dict: D = {
   "Izlet po izbiri": { en: "Outing of your choice", de: "Ausflug nach Wahl" },
   "Vpiši naziv in točke.": { en: "Enter a title and points.", de: "Gib Titel und Punkte ein." },
   "Nagrada shranjena": { en: "Reward saved", de: "Belohnung gespeichert" },
+  "Nagrada izbrisana": { en: "Reward deleted", de: "Belohnung gelöscht" },
+  "Nagrada je že bila unovčena, zato je zdaj skrita.": {
+    en: "This reward was already redeemed, so it is now hidden instead.",
+    de: "Diese Belohnung wurde schon eingelöst und ist jetzt stattdessen versteckt.",
+  },
   'Izbrišem nagrado „{title}"?': {
     en: "Delete reward “{title}”?",
     de: "Belohnung „{title}“ löschen?",

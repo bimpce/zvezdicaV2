@@ -1,0 +1,14 @@
+{
+  "id": "unk_7c7aec19a6545870",
+  "revision": 2,
+  "question": "Is the new database update (review-fixes migration) applied to the live Supabase project, and does the project use the default 1000-row API limit?",
+  "severity": "medium",
+  "domain": "database",
+  "status": "blocked",
+  "probes": [
+    "Owner runs `npx supabase db push` and checks Dashboard → Settings → API → Max rows"
+  ],
+  "evidence_for": [],
+  "evidence_against": [],
+  "resolution": "Not settled: applying the migration changes the live database, which only the owner should do (`npx supabase db push`). App code works before and after it: before, chore/reward deletes behave as they did; after, history is kept. Paging handles the 1000-row cap whatever the setting is."
+}

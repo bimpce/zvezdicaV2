@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Completion } from "./data";
+import { fetchAllPages, type Completion } from "./data";
 
 export type Reward = {
   id: string;
@@ -37,14 +37,15 @@ export function useRewards() {
 export function useRedemptions() {
   return useQuery({
     queryKey: ["redemptions"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("reward_redemptions")
-        .select("id, reward_id, child_id, points, status, requested_at, reviewed_at")
-        .order("requested_at", { ascending: false });
-      if (error) throw error;
-      return data as Redemption[];
-    },
+    queryFn: () =>
+      fetchAllPages<Redemption>((from, to) =>
+        supabase
+          .from("reward_redemptions")
+          .select("id, reward_id, child_id, points, status, requested_at, reviewed_at")
+          .order("requested_at", { ascending: false })
+          .order("id")
+          .range(from, to),
+      ),
     refetchInterval: 20000,
   });
 }
@@ -63,13 +64,15 @@ export function useGoal(childId: string) {
       return data?.reward_id ?? null;
     },
   });
+  /** Returns the error, if any, so the caller can tell the child. */
   async function setGoal(rewardId: string | null) {
-    if (rewardId)
-      await supabase
-        .from("child_goals")
-        .upsert({ child_id: childId, reward_id: rewardId, set_at: new Date().toISOString() });
-    else await supabase.from("child_goals").delete().eq("child_id", childId);
-    qc.invalidateQueries({ queryKey: ["goal", childId] });
+    const { error } = rewardId
+      ? await supabase
+          .from("child_goals")
+          .upsert({ child_id: childId, reward_id: rewardId, set_at: new Date().toISOString() })
+      : await supabase.from("child_goals").delete().eq("child_id", childId);
+    void qc.invalidateQueries({ queryKey: ["goal", childId] });
+    return error;
   }
   return { goal: q.data ?? null, setGoal };
 }

@@ -5,14 +5,8 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ApprovalList } from "@/components/ApprovalList";
 import { ChoreDialog } from "@/components/ChoreDialog";
-import {
-  childChoreList,
-  pointsFor,
-  useChildren,
-  useChores,
-  useCompletions,
-  useFamily,
-} from "@/lib/data";
+import { childChoreList, useChildren, useChores, useCompletions, useFamily } from "@/lib/data";
+import { availablePoints, useRedemptions } from "@/lib/rewards";
 
 export const Route = createFileRoute("/_authenticated/parent/")({
   head: () => ({
@@ -33,6 +27,7 @@ function ParentHome() {
   const { data: kids = [] } = useChildren();
   const { data: chores = [] } = useChores();
   const { data: comps = [] } = useCompletions();
+  const { data: reds = [] } = useRedemptions();
   const [open, setOpen] = useState(false);
 
   return (
@@ -81,7 +76,7 @@ function ParentHome() {
                   </div>
                   <div className="shrink-0 rounded-2xl bg-gradient-points px-3 py-2 text-center text-sun-foreground">
                     <div className="font-display text-xl font-bold leading-none">
-                      {pointsFor(k.id, comps)}
+                      {availablePoints(k.id, comps, reds)}
                     </div>
                     <div className="text-[0.65rem] font-bold">{t("točk")}</div>
                   </div>

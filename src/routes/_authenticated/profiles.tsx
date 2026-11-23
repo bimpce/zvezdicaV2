@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PinInput } from "@/components/PinInput";
 import { supabase } from "@/integrations/supabase/client";
-import { useChildren, useFamily, type Child } from "@/lib/data";
+import { errMsg, useChildren, useFamily, type Child } from "@/lib/data";
 import { setMode } from "@/lib/mode";
+import { unlockParent } from "@/lib/parent";
 import { isValidPin } from "@/lib/periods";
 
 export const Route = createFileRoute("/_authenticated/profiles")({
@@ -37,7 +38,7 @@ function Profiles() {
   const [busy, setBusy] = useState(false);
 
   async function tryPin(value: string) {
-    if (!child) return;
+    if (!child || busy) return;
     if (!isValidPin(value)) {
       toast.error(t("PIN mora imeti točno 6 številk."));
       return;
@@ -50,10 +51,9 @@ function Profiles() {
     setBusy(false);
     if (error || !data) {
       setPin("");
-      {
-        toast.error(t("Napačen PIN. Poskusi znova."));
-        return;
-      }
+      // error = locked out after too many tries; otherwise simply a wrong PIN
+      toast.error(error ? errMsg(error) : t("Napačen PIN. Poskusi znova."));
+      return;
     }
     setMode({ kind: "child", id: child.id, pin: value });
     navigate({ to: "/child/$childId", params: { childId: child.id } });
@@ -61,19 +61,20 @@ function Profiles() {
 
   async function parentLogin(e: React.FormEvent) {
     e.preventDefault();
+    if (busy) return;
     setBusy(true);
-    const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase.auth.signInWithPassword({
-      email: u.user?.email ?? "",
-      password: pw,
-    });
-    setBusy(false);
-    if (error) {
-      toast.error(t("Napačno geslo."));
-      return;
+    try {
+      if (!(await unlockParent(pw))) {
+        toast.error(t("Napačno geslo."));
+        return;
+      }
+      setPw("");
+      navigate({ to: "/parent" });
+    } catch (err) {
+      toast.error(errMsg(err));
+    } finally {
+      setBusy(false);
     }
-    setMode({ kind: "parent" });
-    navigate({ to: "/parent" });
   }
 
   return (

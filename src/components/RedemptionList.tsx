@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { Gift, X } from "lucide-react";
@@ -12,15 +13,26 @@ export function RedemptionList() {
   const { data: rewards = [] } = useRewards();
   const { data: kids = [] } = useChildren();
   const refresh = useInvalidateAll();
+  const [busy, setBusy] = useState<string | null>(null);
   const pending = reds.filter((r) => r.status === "pending");
 
   async function review(r: Redemption, status: "approved" | "rejected") {
-    const { error } = await supabase
+    if (busy) return;
+    setBusy(r.id);
+    // Only a still-pending request changes, so a double tap cannot flip a decision.
+    const { data, error } = await supabase
       .from("reward_redemptions")
       .update({ status, reviewed_at: new Date().toISOString() })
-      .eq("id", r.id);
+      .eq("id", r.id)
+      .eq("status", "pending")
+      .select("id");
+    setBusy(null);
     if (error) {
       toast.error(errMsg(error));
+      return;
+    }
+    if (!data.length) {
+      refresh();
       return;
     }
     toast.success(
@@ -67,6 +79,7 @@ export function RedemptionList() {
               <Button
                 variant="success"
                 className="btn-block xs:flex-1"
+                disabled={busy === r.id}
                 onClick={() => review(r, "approved")}
               >
                 <Gift /> {t("Potrdi in izroči")}
@@ -74,6 +87,7 @@ export function RedemptionList() {
               <Button
                 variant="outline"
                 className="btn-block xs:flex-1"
+                disabled={busy === r.id}
                 onClick={() => review(r, "rejected")}
               >
                 <X /> {t("Zavrni")}

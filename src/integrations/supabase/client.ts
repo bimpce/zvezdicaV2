@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
+import { parentToken } from "@/lib/mode";
 
 function isNewSupabaseApiKey(value: string): boolean {
   return value.startsWith("sb_publishable_") || value.startsWith("sb_secret_");
@@ -39,6 +40,13 @@ function createSupabaseFetch(supabaseUrl: string, supabaseKey: string): typeof f
     }
 
     headers.set("apikey", supabaseKey);
+    // Parent mode token: the database allows parent-only changes only with it.
+    const token = parentToken();
+    if (token) {
+      const reqUrl =
+        typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+      if (reqUrl.includes("/rest/v1/")) headers.set("x-parent-token", token);
+    }
     if (serverUrl) {
       const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
       if (url.startsWith(`${publicUrl}/`)) {

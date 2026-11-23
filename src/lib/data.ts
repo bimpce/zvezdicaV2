@@ -20,6 +20,8 @@ export type Chore = {
   frequency: Frequency;
   start_date: string;
   end_date: string | null;
+  /** Set when a chore with history was deleted: hidden, but its earned points stay. */
+  archived_at?: string | null;
   created_at: string;
   chore_assignments: { child_id: string }[];
 };
@@ -79,17 +81,32 @@ export function useChores() {
   });
 }
 
+/** Supabase returns at most 1000 rows per request; fetch page by page so totals stay right. */
+export const PAGE_SIZE = 1000;
+export async function fetchAllPages<T>(
+  page: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: unknown }>,
+): Promise<T[]> {
+  const all: T[] = [];
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const { data, error } = await page(from, from + PAGE_SIZE - 1);
+    if (error) throw error;
+    all.push(...(data ?? []));
+    if (!data || data.length < PAGE_SIZE) return all;
+  }
+}
+
 export function useCompletions() {
   return useQuery({
     queryKey: ["completions"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("completions")
-        .select("*")
-        .order("submitted_at", { ascending: false });
-      if (error) throw error;
-      return data as Completion[];
-    },
+    queryFn: () =>
+      fetchAllPages<Completion>((from, to) =>
+        supabase
+          .from("completions")
+          .select("*")
+          .order("submitted_at", { ascending: false })
+          .order("id")
+          .range(from, to),
+      ),
     refetchInterval: 20000,
   });
 }
@@ -108,7 +125,12 @@ export function pointsFor(childId: string, completions: Completion[]) {
 /** Chores active now for a child, with the status in the current period. */
 export function childChoreList(childId: string, chores: Chore[], completions: Completion[]) {
   return chores
-    .filter((c) => c.chore_assignments.some((a) => a.child_id === childId) && isChoreActive(c))
+    .filter(
+      (c) =>
+        !c.archived_at &&
+        c.chore_assignments.some((a) => a.child_id === childId) &&
+        isChoreActive(c),
+    )
     .map((chore) => {
       const key = periodKey(chore.frequency);
       const comp = completions.find(
@@ -118,8 +140,13 @@ export function childChoreList(childId: string, chores: Chore[], completions: Co
     });
 }
 
+/** User-facing error text; database messages are Slovenian source strings, so translate them. */
 export function errMsg(e: unknown) {
   if (e && typeof e === "object" && "message" in e)
-    return String((e as { message: string }).message);
+    return translate(getLang(), String((e as { message: string }).message));
   return translate(getLang(), "Prišlo je do napake");
 }
+
+/** Postgres "still referenced" error: the row has history that must be kept. */
+export const isForeignKeyViolation = (e: unknown) =>
+  !!e && typeof e === "object" && (e as { code?: unknown }).code === "23503";

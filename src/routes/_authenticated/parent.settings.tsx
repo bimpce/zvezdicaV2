@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { errMsg, useFamily, useInvalidateAll } from "@/lib/data";
-import { setMode } from "@/lib/mode";
+import { lockParent } from "@/lib/parent";
 import { LANGS, setLang, useT, useTitle } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
@@ -30,9 +30,12 @@ function Settings() {
   useTitle("Nastavitve | Zvezdica");
   const navigate = useNavigate();
   const [f, setF] = useState({ name: "", parent: "" });
+  // Fill the form once per family; background refreshes must not wipe unsaved typing.
+  const familyId = family?.id;
   useEffect(() => {
     if (family) setF({ name: family.name, parent: family.parent_name });
-  }, [family]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [familyId]);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -92,7 +95,7 @@ function Settings() {
         variant="outline"
         className="btn-block"
         onClick={async () => {
-          setMode(null);
+          await lockParent();
           await supabase.auth.signOut();
           navigate({ to: "/" });
         }}

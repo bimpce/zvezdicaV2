@@ -1,0 +1,44 @@
+{
+  "revision": 6,
+  "brief": {
+    "question": "Thoroughly review the Zvezdica project code (React/TanStack Start + Supabase family chores app) and fix bugs / suggest improvements.",
+    "purpose": "Code quality and correctness review for the owner, who doesn't code.",
+    "targets": [
+      "C:\\ClaudeCliProjekti\\zvezdicaC"
+    ],
+    "constraints": [
+      "Keep existing stack",
+      "Never edit applied migrations; new migrations only",
+      "Don't start dev servers",
+      "Never push to origin (old repo)"
+    ],
+    "done_when": "Clear-cut bugs fixed with tests/lint/build passing, remaining suggestions listed in plain words."
+  },
+  "plan": [
+    {
+      "title": "Read the whole project",
+      "status": "done"
+    },
+    {
+      "title": "Check that it builds and tests pass today",
+      "status": "done"
+    },
+    {
+      "title": "Fix clear mistakes",
+      "status": "done"
+    },
+    {
+      "title": "Re-run build, tests and checks",
+      "status": "done",
+      "why": "build ok, 25 tests pass, rebuild_check passes"
+    },
+    {
+      "title": "Write up remaining suggestions",
+      "status": "done"
+    }
+  ],
+  "hypotheses": [],
+  "findings": [],
+  "handoff": "Round 2 (2026-11-23): added supabase/migrations/20261123000100_parent_lock_and_pin_limits.sql — parent_unlock(password checked against auth.users bcrypt) returns token sent as x-parent-token header (client.ts fetch, REST only); is_parent() required by RLS for all parent writes + add_child/reset_child_pin; parent_touch polled every 60s in parent layout (12h sliding), parent_lock on switch/logout; auth_failures lockout 5 tries/15 min for child PINs and parent password; child_submit/child_redeem now return boolean (false = wrong PIN, so failure is counted). Client falls back to old behaviour if functions missing (PGRST202). Lint has 0 warnings, 25 tests pass, build ok, rebuild_check passes. Still needs owner: `npx supabase db push` for both new migrations, regenerate types, and in Supabase dashboard enable \"Secure password change\" so a child can't change the parent password from the signed-in session. Untested against a live DB (CORS for custom header assumed allowed by Supabase gateway).",
+  "updated": "2026-11-23T17:15:32Z"
+}

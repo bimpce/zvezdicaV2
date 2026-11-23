@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { errMsg } from "@/lib/data";
-import { setMode } from "@/lib/mode";
+import { unlockParent } from "@/lib/parent";
 
 type Mode = "signup" | "login";
 
@@ -60,17 +60,19 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        if (data.session) setMode({ kind: "parent" });
-        if (data.session) navigate({ to: "/parent/children", search: { welcome: true } });
-        else setSent(true);
+        if (!data.session) setSent(true);
+        else if (await unlockParent(f.password).catch(() => false))
+          navigate({ to: "/parent/children", search: { welcome: true } });
+        else navigate({ to: "/profiles" });
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: f.email,
           password: f.password,
         });
         if (error) throw new Error(t("Napačen e-poštni naslov ali geslo."));
-        setMode({ kind: "parent" });
-        navigate({ to: "/parent" });
+        // Same password opens parent mode in the database; if that fails, pick a profile.
+        const ok = await unlockParent(f.password).catch(() => false);
+        navigate({ to: ok ? "/parent" : "/profiles" });
       }
     } catch (err) {
       toast.error(errMsg(err));

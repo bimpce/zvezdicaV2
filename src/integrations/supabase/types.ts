@@ -141,6 +141,7 @@ export type Database = {
       };
       chores: {
         Row: {
+          archived_at: string | null;
           created_at: string;
           description: string | null;
           end_date: string | null;
@@ -152,6 +153,7 @@ export type Database = {
           title: string;
         };
         Insert: {
+          archived_at?: string | null;
           created_at?: string;
           description?: string | null;
           end_date?: string | null;
@@ -163,6 +165,7 @@ export type Database = {
           title: string;
         };
         Update: {
+          archived_at?: string | null;
           created_at?: string;
           description?: string | null;
           end_date?: string | null;
@@ -386,7 +389,7 @@ export type Database = {
       child_available_points: { Args: { _child_id: string }; Returns: number };
       child_redeem: {
         Args: { _child_id: string; _pin: string; _reward_id: string };
-        Returns: undefined;
+        Returns: boolean;
       };
       child_submit: {
         Args: {
@@ -395,9 +398,20 @@ export type Database = {
           _period_key: string;
           _pin: string;
         };
-        Returns: undefined;
+        Returns: boolean;
       };
+      is_parent: { Args: never; Returns: boolean };
       my_family_id: { Args: never; Returns: string };
+      parent_lock: { Args: never; Returns: undefined };
+      parent_touch: { Args: never; Returns: boolean };
+      parent_unlock: { Args: { _password: string }; Returns: string };
+      period_key_for: {
+        Args: {
+          _d: string;
+          _freq: Database["public"]["Enums"]["chore_frequency"];
+        };
+        Returns: string;
+      };
       reset_child_pin: {
         Args: { _child_id: string; _pin: string };
         Returns: undefined;

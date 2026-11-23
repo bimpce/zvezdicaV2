@@ -24,16 +24,29 @@ export function ApprovalList({ limit }: { limit?: number }) {
   const refresh = useInvalidateAll();
   const [rejecting, setRejecting] = useState<Completion | null>(null);
   const [note, setNote] = useState("");
+  const [busy, setBusy] = useState<string | null>(null);
   const pending = comps.filter((c) => c.status === "pending").slice(0, limit);
 
   async function review(c: Completion, status: "approved" | "rejected", n?: string, percent = 100) {
+    if (busy) return;
     const pts = status === "approved" ? partialPoints(c.points, percent) : c.points;
-    const { error } = await supabase
+    setBusy(c.id);
+    // Only a still-pending row is updated, so a double tap or a second parent device
+    // cannot overwrite a review that already happened.
+    const { data, error } = await supabase
       .from("completions")
       .update({ status, points: pts, note: n || null, reviewed_at: new Date().toISOString() })
-      .eq("id", c.id);
+      .eq("id", c.id)
+      .eq("status", "pending")
+      .select("id");
+    setBusy(null);
     if (error) {
       toast.error(errMsg(error));
+      return;
+    }
+    if (!data.length) {
+      setRejecting(null);
+      refresh();
       return;
     }
     toast.success(
@@ -85,6 +98,7 @@ export function ApprovalList({ limit }: { limit?: number }) {
                   key={p}
                   variant={p === 100 ? "success" : "secondary"}
                   className="h-auto min-h-11 flex-col gap-0 py-1.5"
+                  disabled={busy === c.id}
                   onClick={() => review(c, "approved", undefined, p)}
                 >
                   <span className="flex items-center gap-1">
@@ -97,7 +111,12 @@ export function ApprovalList({ limit }: { limit?: number }) {
                 </Button>
               ))}
             </div>
-            <Button variant="outline" className="mt-2 w-full" onClick={() => setRejecting(c)}>
+            <Button
+              variant="outline"
+              className="mt-2 w-full"
+              disabled={busy === c.id}
+              onClick={() => setRejecting(c)}
+            >
               <X /> {t("Zavrni")}
             </Button>
           </div>
@@ -116,6 +135,7 @@ export function ApprovalList({ limit }: { limit?: number }) {
           <Button
             variant="destructive"
             className="w-full"
+            disabled={!!busy}
             onClick={() => {
               if (!note.trim()) {
                 toast.error(t("Dodaj kratko razlago."));

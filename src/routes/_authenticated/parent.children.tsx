@@ -12,13 +12,13 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   AVATARS,
   errMsg,
-  pointsFor,
   useChildren,
   useCompletions,
   useInvalidateAll,
   type Child,
 } from "@/lib/data";
 import { isValidPin } from "@/lib/periods";
+import { availablePoints, useRedemptions } from "@/lib/rewards";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/parent/children")({
@@ -44,6 +44,7 @@ function Children() {
   const { welcome } = Route.useSearch();
   const { data: kids = [] } = useChildren();
   const { data: comps = [] } = useCompletions();
+  const { data: reds = [] } = useRedemptions();
   const refresh = useInvalidateAll();
   const [dlg, setDlg] = useState<DialogState>(welcome ? { kind: "add" } : null);
   const [name, setName] = useState("");
@@ -83,7 +84,7 @@ function Children() {
           _avatar: avatar,
         });
         if (error) throw error;
-        toast.success(t("{name} dodan/a! 🎉", { name }));
+        toast.success(t("{name} dodan/a! 🎉", { name: name.trim() }));
       } else if (dlg.kind === "edit") {
         const { error } = await supabase
           .from("children")
@@ -150,7 +151,7 @@ function Children() {
               <div className="min-w-0">
                 <h3 className="truncate">{k.name}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {t("{n} točk", { n: pointsFor(k.id, comps) })}
+                  {t("{n} točk", { n: availablePoints(k.id, comps, reds) })}
                 </p>
               </div>
             </div>

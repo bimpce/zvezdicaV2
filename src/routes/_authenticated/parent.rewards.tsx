@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
-import { errMsg, useChildren, useFamily } from "@/lib/data";
+import { errMsg, isForeignKeyViolation, useChildren, useFamily } from "@/lib/data";
 import { useRewards, type Reward } from "@/lib/rewards";
 
 export const Route = createFileRoute("/_authenticated/parent/rewards")({
@@ -58,7 +58,7 @@ function Rewards() {
 
   async function save(d: Draft) {
     if (!family) return;
-    if (!d.title.trim() || d.points < 1) {
+    if (!d.title.trim() || !Number.isInteger(d.points) || d.points < 1) {
       toast.error(t("Vpiši naziv in točke."));
       return;
     }
@@ -84,8 +84,14 @@ function Rewards() {
   async function remove(r: Reward) {
     if (!confirm(t('Izbrišem nagrado „{title}"?', { title: r.title }))) return;
     const { error } = await supabase.from("rewards").delete().eq("id", r.id);
-    if (error) toast.error(errMsg(error));
-    else void refetch();
+    if (isForeignKeyViolation(error)) {
+      // Already redeemed: deleting would refund the points, so hide it from the kids instead.
+      const { error: e2 } = await supabase.from("rewards").update({ active: false }).eq("id", r.id);
+      if (e2) toast.error(errMsg(e2));
+      else toast.success(t("Nagrada je že bila unovčena, zato je zdaj skrita."));
+    } else if (error) toast.error(errMsg(error));
+    else toast.success(t("Nagrada izbrisana"));
+    void refetch();
   }
 
   return (

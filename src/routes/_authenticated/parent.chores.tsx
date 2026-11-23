@@ -6,7 +6,14 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChoreDialog } from "@/components/ChoreDialog";
 import { supabase } from "@/integrations/supabase/client";
-import { errMsg, useChildren, useChores, useInvalidateAll, type Chore } from "@/lib/data";
+import {
+  errMsg,
+  isForeignKeyViolation,
+  useChildren,
+  useChores,
+  useInvalidateAll,
+  type Chore,
+} from "@/lib/data";
 import { frequencyLabel, isChoreActive } from "@/lib/periods";
 
 export const Route = createFileRoute("/_authenticated/parent/chores")({
@@ -24,7 +31,8 @@ export const Route = createFileRoute("/_authenticated/parent/chores")({
 function Chores() {
   const t = useT();
   useTitle("Opravila | Zvezdica");
-  const { data: chores = [] } = useChores();
+  const { data: allChores = [] } = useChores();
+  const chores = allChores.filter((c) => !c.archived_at);
   const { data: kids = [] } = useChildren();
   const refresh = useInvalidateAll();
   const [edit, setEdit] = useState<Chore | null>(null);
@@ -32,7 +40,13 @@ function Chores() {
 
   async function remove(c: Chore) {
     if (!confirm(t("Izbrišem opravilo »{title}«?", { title: c.title }))) return;
-    const { error } = await supabase.from("chores").delete().eq("id", c.id);
+    let { error } = await supabase.from("chores").delete().eq("id", c.id);
+    // Completions keep the chore alive so earned points are not lost: archive it instead.
+    if (isForeignKeyViolation(error))
+      ({ error } = await supabase
+        .from("chores")
+        .update({ archived_at: new Date().toISOString() })
+        .eq("id", c.id));
     if (error) {
       toast.error(errMsg(error));
       return;

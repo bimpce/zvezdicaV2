@@ -102,21 +102,47 @@ function ChildView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seenLoaded, chores.length]);
 
+  /** The saved PIN no longer works (the parent reset it): ask for the new one. */
+  function wrongPin() {
+    setMode(null);
+    toast.error(t("Napačen PIN. Poskusi znova."));
+    navigate({ to: "/profiles" });
+  }
+
+  /**
+   * child_submit / child_redeem return false on a wrong PIN (so the failed try is counted);
+   * before the database update they raised "Napačen PIN" instead.
+   */
+  function handleRpcResult(error: { message: string } | null, ok: boolean | null): boolean {
+    if (error) {
+      if (error.message === "Napačen PIN") wrongPin();
+      else toast.error(errMsg(error));
+      return false;
+    }
+    if (ok === false) {
+      wrongPin();
+      return false;
+    }
+    return true;
+  }
+
+  async function changeGoal(rewardId: string | null) {
+    const error = await setGoal(rewardId);
+    if (error) toast.error(errMsg(error));
+  }
+
   async function done(choreId: string, key: string) {
     const m = getMode();
     if (m?.kind !== "child") return;
     setBusy(choreId);
-    const { error } = await supabase.rpc("child_submit", {
+    const { data, error } = await supabase.rpc("child_submit", {
       _child_id: childId,
       _pin: m.pin,
       _chore_id: choreId,
       _period_key: key,
     });
     setBusy(null);
-    if (error) {
-      toast.error(errMsg(error));
-      return;
-    }
+    if (!handleRpcResult(error, data)) return;
     void markSeen([choreId]);
     toast.success(t("Poslano staršem v pregled! 🚀"));
     refresh();
@@ -126,18 +152,15 @@ function ChildView() {
     const m = getMode();
     if (m?.kind !== "child") return;
     setBusy(r.id);
-    const { error } = await supabase.rpc("child_redeem", {
+    const { data, error } = await supabase.rpc("child_redeem", {
       _child_id: childId,
       _pin: m.pin,
       _reward_id: r.id,
     });
     setBusy(null);
     setRedeeming(null);
-    if (error) {
-      toast.error(errMsg(error));
-      return;
-    }
-    if (goal === r.id) void setGoal(null);
+    if (!handleRpcResult(error, data)) return;
+    if (goal === r.id) void changeGoal(null);
     toast.success(t("Zahtevek poslan staršem! 🎁"));
     refresh();
   }
@@ -375,7 +398,7 @@ function ChildView() {
                       <Button
                         variant="ghost"
                         className="btn-block xs:flex-1"
-                        onClick={() => setGoal(isGoal ? null : r.id)}
+                        onClick={() => changeGoal(isGoal ? null : r.id)}
                       >
                         <Star className={isGoal ? "fill-current" : ""} />{" "}
                         {isGoal ? t("Moj cilj") : t("Nastavi kot cilj")}

@@ -96,15 +96,28 @@ export function ChoreDialog({
       if (id) {
         const { error } = await supabase.from("chores").update(row).eq("id", id);
         if (error) throw error;
-        await supabase.from("chore_assignments").delete().eq("chore_id", id);
+        // Remove only the kids that were unticked, so a failed save never leaves the
+        // chore without anyone assigned.
+        const removed = chore!.chore_assignments
+          .map((a) => a.child_id)
+          .filter((k) => !f.kids.includes(k));
+        if (removed.length) {
+          const { error: de } = await supabase
+            .from("chore_assignments")
+            .delete()
+            .eq("chore_id", id)
+            .in("child_id", removed);
+          if (de) throw de;
+        }
       } else {
         const { data, error } = await supabase.from("chores").insert(row).select("id").single();
         if (error) throw error;
         id = data.id;
       }
-      const { error: ae } = await supabase
-        .from("chore_assignments")
-        .insert(f.kids.map((k) => ({ chore_id: id!, child_id: k })));
+      const { error: ae } = await supabase.from("chore_assignments").upsert(
+        f.kids.map((k) => ({ chore_id: id!, child_id: k })),
+        { ignoreDuplicates: true },
+      );
       if (ae) throw ae;
       toast.success(chore ? t("Opravilo posodobljeno") : t("Opravilo dodano"));
       refresh();
